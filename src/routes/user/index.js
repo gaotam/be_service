@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authRouter = require('./auth.route');
 const userRouter = require('./user.route');
+const notificationRouter = require('./notification.route');
 const { protect, authorize } = require("../../middlewares/auth")
 
 const defaultRoutes = [
@@ -12,6 +13,9 @@ const defaultRoutes = [
   {
     path: "/users",
     route: userRouter
+  },{
+    path: "/",
+    route: notificationRouter
   }
 ];
 
