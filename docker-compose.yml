@@ -1,0 +1,49 @@
+version: '3.5'
+
+services:
+  nodejs:
+    build: .
+    image: be_checkin
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - checkin-network
+    volumes:
+      - image:/app/src/uploads
+    command: npm run start
+
+  redis:
+    image: redis:7
+    networks:
+      - checkin-network
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass !CnJbIcJqew
+
+  postgres:
+    container_name: db_checkin
+    image: postgres:15.1-alpine
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: bLcWtb3W*%dyV)S
+      POSTGRES_DB: live
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+       - ./backup:/home
+    ports:
+      - 5432:5432
+    networks:
+      - checkin-network
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  image:
+
+networks:
+  checkin-network:
+    driver: bridge
