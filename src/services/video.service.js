@@ -30,6 +30,19 @@ const getOne = async (q) => {
   return user;
 };
 
+const create = async (videoBody) => {
+  const video = await prisma.video.create({
+    data: videoBody
+  })
+
+  if (!video) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "Can not create new video");
+  }
+
+  return video;
+};
+
+
 const getById = async (userId) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -182,11 +195,5 @@ const deleteImage = async (userId) => {
 };
 
 module.exports = {
-  getById,
-  getOne,
-  getAll,
-  getUnique,
-  getUserByEmail,
-  updateById,
-  deleteImage,
+  create
 };

@@ -5,5 +5,6 @@ module.exports.captchaService = require('./captcha.service');
 module.exports.socketService = require('./socket.service');
 module.exports.aiService = require('./ai.service');
 module.exports.mailService = require('./mail.service');
-
-
+module.exports.catergoryService = require('./category.service');
+module.exports.videoService = require('./video.service');
+module.exports.liveService = require('./live.service');
