@@ -6,10 +6,6 @@ const ApiError = require("../utils/ApiError");
 const { Role } = require("@prisma/client");
 
 const create = async (liveBody) => {
-  console.log({
-    ...liveBody,
-    liveKey: `${hexoid(4)()}-${hexoid(4)()}-${hexoid(4)()}-${hexoid(4)()}`
-  });
   const live = await prisma.liveStream.create({
     data: {
       ...liveBody,

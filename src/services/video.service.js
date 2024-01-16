@@ -78,41 +78,43 @@ const getUnique = async (email) => {
 };
 
 const getAll = async (filter, options) => {
-  const { q, checkin } = filter;
+  // const { q, checkin } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
 
   const where = {
-    role: Role.USER,
   };
 
-  if (q) {
-    where["OR"] = [
-      { phone: q },
-      { email: q },
-      { fullName: { contains: q, mode: "insensitive" } },
-    ];
-  }
+  // if (q) {
+  //   where["OR"] = [
+  //     { phone: q },
+  //     { email: q },
+  //     { fullName: { contains: q, mode: "insensitive" } },
+  //   ];
+  // }
 
-  if (checkin == 1) {
-    where["isCheckin"] = true;
-  }
+  // if (checkin == 1) {
+  //   where["isCheckin"] = true;
+  // }
 
   const [users, total] = await prisma.$transaction([
-    prisma.user.findMany({
+    prisma.video.findMany({
       where,
       select: {
         id: true,
-        fullName: true,
-        email: true,
-        phone: true,
-        image: true,
-        isCheckin: true,
-        acceptFace: true,
-        course: true,
-        facebook: true,
-        checkinType: true,
+        userId: true,
+        category: true,
+        title: true,
+        desc: true,
+        path: true,
+        thumbnail: true,
+        views: true,
+        like: true,
+        dislike: true,
+        metadata: true,
+        disableComment: true,
+        isLive: true
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -172,28 +174,26 @@ const updateById = async (id, data) => {
   return updateUser;
 };
 
-const deleteImage = async (userId) => {
-  const user = await prisma.user.findUnique({
+const deleteById = async (id) => {
+  const video = await prisma.video.findUnique({
     where: {
-      id: userId,
+      id: id,
     },
   });
 
-  if (!user.image) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "user has no photo");
+  if (!video) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "video not exist");
   }
 
-  await prisma.user.update({
+  await prisma.video.delete({
     where: {
-      id: userId,
-    },
-    data: {
-      acceptFace: false,
-      image: null,
-    },
+      id,
+    }
   });
 };
 
 module.exports = {
-  create
+  create,
+  getAll,
+  deleteById
 };

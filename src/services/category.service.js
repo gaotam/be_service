@@ -15,6 +15,66 @@ const create = async (categoryBody) => {
   return category;
 };
 
+const getAll = async () => {
+  return prisma.category.findMany({
+    select: {
+      name: true,
+      index: true
+    }
+  }) 
+}
+
+const updateById = async (id, data) => {
+  const { name, index } = data;
+  
+  const category = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+  
+  if (!category) {
+    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
+  }
+
+  const updateCategory = await prisma.category.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      index
+    },
+    select: {
+      name: true,
+      index: true
+    },
+  });
+
+  return updateCategory;
+};
+
+const deleteById = async (id) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id,
+    },
+  });
+  
+  if (!category) {
+    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
+  }
+  
+  return await prisma.category.delete({
+    where: {
+      id
+    },
+  })
+}
+
 module.exports = {
-  create
+  create,
+  getAll,
+  updateById,
+  deleteById
 };

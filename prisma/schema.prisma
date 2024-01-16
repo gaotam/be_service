@@ -29,7 +29,7 @@ model User {
 
 model LiveStream {
   id        String   @id @default(uuid())
-  liveKey   String   @db.VarChar(10)
+  liveKey   String   @db.VarChar(20)
   status    Status   @default(IDLE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -40,7 +40,8 @@ model LiveStream {
 
 model Category {
   id        String   @id @default(uuid())
-  name      String   @db.VarChar(20)
+  name      String   @db.VarChar(20) @unique
+  index     Int      @db.SmallInt
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   Video     Video[]
@@ -50,16 +51,16 @@ model Category {
 
 model Video {
   id             String      @id @default(uuid())
-  user           User        @relation(fields: [userId], references: [id])
-  category       Category    @relation(fields: [categoryId], references: [id])
-  livestream     LiveStream? @relation(fields: [livestreamId], references: [id])
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category       Category    @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  livestream     LiveStream? @relation(fields: [livestreamId], references: [id], onDelete: Cascade)
   userId         String
   categoryId     String
   livestreamId   String?
   title          String      @db.VarChar(100)
   desc           String      @db.VarChar(200)
   path           String?
-  thumbnail      String?     
+  thumbnail      String?
   views          Int         @default(0)
   like           Int         @default(0)
   dislike        Int         @default(0)
@@ -75,8 +76,8 @@ model Video {
 
 model Subscription {
   id        String   @id @default(uuid())
-  user      User     @relation(name: "user", fields: [userId], references: [id])
-  sup_user  User     @relation(name: "sub_user", fields: [supUserId], references: [id])
+  user      User     @relation(name: "user", fields: [userId], references: [id], onDelete: Cascade)
+  sup_user  User     @relation(name: "sub_user", fields: [supUserId], references: [id], onDelete: Cascade)
   userId    String
   supUserId String
   createdAt DateTime @default(now())
@@ -87,8 +88,8 @@ model Subscription {
 
 model Comment {
   id        String   @id @default(uuid())
-  user      User     @relation(fields: [userId], references: [id])
-  Video     Video    @relation(fields: [videoId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   content   String   @db.VarChar(200)
   userId    String
   videoId   String

@@ -29,7 +29,7 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: bLcWtb3W*%dyV)S
-      POSTGRES_DB: live
+      POSTGRES_DB: postgres
       PGDATA: /data/postgres
     volumes:
        - postgres:/data/postgres

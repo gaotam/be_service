@@ -13,10 +13,6 @@ const login = catchAsync(async (req, res) => {
 
 const signup = catchAsync(async (req, res) => {
   const data = { fullname, password, gender, email } = req.body
-  if(req.file){
-    data["image"] = req.file.filename;
-  }
-
   let user = await userService.getUnique(email)
   if(user){
     throw new ApiError(httpStatus.NOT_FOUND, "user already exists");
