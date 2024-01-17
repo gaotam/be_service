@@ -54,4 +54,43 @@ const uploadThumbnail = multer({
   },
 });
 
-module.exports = { uploadAvatar, uploadThumbnail };
+const storageVideo = multer.diskStorage({
+  destination: function (req, file, cb) {
+    switch(file.fieldname) {
+      case "thumbnail":
+        cb(null, "src/uploads/thumbnail");
+        break;
+      case "video":
+        cb(null, "src/uploads/video");
+        break;
+    }
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const uniqueSuffix = crypto.randomBytes(20).toString("hex");
+    cb(null, `${uniqueSuffix}${ext}`);
+  },
+});
+
+const uploadVideo = multer({
+  storage: storageVideo,
+  fileFilter: function (req, file, callback) {
+    const ext = path.extname(file.originalname);
+    const extImageAllowed = [".png", ".jpg", ".jpeg", ".heic"];
+    const extVideoAllowed = [".mp4"];
+
+    if (file.fieldname == "thumbnail" && !extImageAllowed.includes(ext)){
+      return callback(new Error("Thumbnail only support .png, jpg, .jpeg, .heic image"));
+    } 
+
+    if (file.fieldname == "video" && !extVideoAllowed.includes(ext)){
+      return callback(new Error("Video only support .mp4"));
+    } 
+    callback(null, true);
+  },
+  limits: {
+    fileSize: 1024 * 1024 * 100,
+  },
+});
+
+module.exports = { uploadAvatar, uploadThumbnail, uploadVideo };

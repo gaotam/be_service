@@ -1,11 +1,13 @@
 const httpStatus = require("http-status");
-const { authService, tokenService, captchaService, userService } = require("../services");
+const { liveService } = require("../services");
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 
 const onConnect = catchAsync(async (req, res) => {
-  console.log("connect ", req.body);
+  if (req.body.app != "live"){
+    throw new ApiError(httpStatus.BAD_REQUEST, "app not found");
+  }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
@@ -15,7 +17,10 @@ const onPlay = catchAsync(async (req, res) => {
 });
 
 const onPublish = catchAsync(async (req, res) => {
-  console.log("on_publish ", req.body);
+  const live = await liveService.getByLiveKey(req.body.name)
+  if (!live){
+    throw new ApiError(httpStatus.BAD_REQUEST, "live key not found");
+  }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 

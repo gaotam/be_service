@@ -59,7 +59,7 @@ model Video {
   livestreamId   String?
   title          String      @db.VarChar(100)
   desc           String      @db.VarChar(200)
-  path           String?
+  src            String?
   thumbnail      String?
   views          Int         @default(0)
   like           Int         @default(0)

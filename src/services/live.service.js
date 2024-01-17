@@ -20,6 +20,18 @@ const create = async (liveBody) => {
   return live;
 };
 
+const getByLiveKey = async(liveKey) => {
+  return prisma.liveStream.findFirst({
+    where: {
+      liveKey
+    },
+    select: {
+      id: true,
+    },
+  });
+}
+
 module.exports = {
-  create
+  create,
+  getByLiveKey
 };

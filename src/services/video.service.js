@@ -107,7 +107,7 @@ const getAll = async (filter, options) => {
         category: true,
         title: true,
         desc: true,
-        path: true,
+        src: true,
         thumbnail: true,
         views: true,
         like: true,

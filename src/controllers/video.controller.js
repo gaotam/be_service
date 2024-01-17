@@ -1,25 +1,26 @@
 const httpStatus = require("http-status");
-const cache = require('../config/cache')
 const { videoService, liveService } = require("../services");
-
 const catchAsync = require("../utils/catchAsync");
-const pick = require('../utils/pick');
 const exclude = require('../utils/exclude');
-const ApiError = require("../utils/ApiError");
 
 const create = catchAsync(async (req, res) => {
   const data = { categoryId, title, desc, isLive, disableComment } = req.body
   const userId = req.user.id
   data.isLive = isLive === "true"
 
-  if(req.file){
-    data["thumbnail"] = `/thumbnail/${req.file.filename}`;
+  if(req.files?.thumbnail[0]){
+    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
+  }
+
+  if(req.files?.video[0]){
+    data["src"] = `/video/${req.files?.video[0].filename}`;
   }
 
   if (data.isLive) {
     const live = await liveService.create({})
     data.livestreamId = live.id
   }
+
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
   const videoRes = exclude(video, ['password']);
