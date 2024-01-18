@@ -8,14 +8,18 @@ const create = catchAsync(async (req, res) => {
   const userId = req.user.id
   data.isLive = isLive === "true"
 
+  if(isLive && !req.files?.video && req.files?.video.length == 0){
+    return res.status(httpStatus.BAD_REQUEST).send({ code: httpStatus.BAD_REQUEST, message: "", data: null, error: "video is required" });
+  }
+
   if(req.files?.thumbnail[0]){
-    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
+    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
   }
 
-  if(req.files?.video[0]){
-    data["src"] = `/video/${req.files?.video[0].filename}`;
+  if(isLive && req.files?.video && req.files?.video.length > 0){
+    data["src"] = `/videos/${req.files?.video[0].filename}`;
   }
-
+  
   if (data.isLive) {
     const live = await liveService.create({})
     data.livestreamId = live.id

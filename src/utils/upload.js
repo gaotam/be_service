@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "src/uploads/avatar");
+    cb(null, `${process.env.PATH_UPLOAD}/images`);
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
@@ -13,34 +13,8 @@ const storage = multer.diskStorage({
   },
 });
 
-const uploadAvatar = multer({
+const uploadImages = multer({
   storage: storage,
-  fileFilter: function (req, file, callback) {
-    const ext = path.extname(file.originalname);
-    const extAllowed = [".png", ".jpg", ".jpeg", ".heic"];
-    if (!extAllowed.includes(ext)) {
-      return callback(new Error("Only support .png, jpg, .jpeg, .heic image"));
-    }
-    callback(null, true);
-  },
-  limits: {
-    fileSize: 1024 * 1024 * 10,
-  },
-});
-
-const storageThumbnail = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "src/uploads/thumbnail");
-  },
-  filename: function (req, file, cb) {
-    const ext = path.extname(file.originalname);
-    const uniqueSuffix = crypto.randomBytes(20).toString("hex");
-    cb(null, `${uniqueSuffix}${ext}`);
-  },
-});
-
-const uploadThumbnail = multer({
-  storage: storageThumbnail,
   fileFilter: function (req, file, callback) {
     const ext = path.extname(file.originalname);
     const extAllowed = [".png", ".jpg", ".jpeg", ".heic"];
@@ -58,10 +32,10 @@ const storageVideo = multer.diskStorage({
   destination: function (req, file, cb) {
     switch(file.fieldname) {
       case "thumbnail":
-        cb(null, "src/uploads/thumbnail");
+        cb(null, `${process.env.PATH_UPLOAD}/thumbnails`);
         break;
       case "video":
-        cb(null, "src/uploads/video");
+        cb(null, `${process.env.PATH_UPLOAD}/videos`);
         break;
     }
   },
@@ -93,4 +67,4 @@ const uploadVideo = multer({
   },
 });
 
-module.exports = { uploadAvatar, uploadThumbnail, uploadVideo };
+module.exports = { uploadImages, uploadVideo };
