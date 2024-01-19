@@ -5,19 +5,21 @@ const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 
 const onConnect = catchAsync(async (req, res) => {
-  if (req.body.app != "live"){
+  liveKey = req.body.app
+  if (liveKey != "live" && liveKey != "transcode_live"){
     throw new ApiError(httpStatus.BAD_REQUEST, "app not found");
   }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
 const onPlay = catchAsync(async (req, res) => {
-  console.log("on_play ", req.body);
+  // console.log("on_play ", req.body);
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
 const onPublish = catchAsync(async (req, res) => {
-  const live = await liveService.getByLiveKey(req.body.name)
+  liveKey = req.body.name.split("_")[0]
+  const live = await liveService.getByLiveKey(liveKey)
   if (!live){
     throw new ApiError(httpStatus.BAD_REQUEST, "live key not found");
   }
@@ -30,7 +32,7 @@ const onDone = catchAsync(async (req, res) => {
 });
 
 const onPlayDone = catchAsync(async (req, res) => {
-  console.log("on_play_done ", req.body);
+  // console.log("on_play_done ", req.body);
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 

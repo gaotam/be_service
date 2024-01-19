@@ -103,11 +103,14 @@ model Comment {
 model Task {
   id        String   @id @default(uuid())
   type      TaskType
+  id_source String
   status    Status   @default(IDLE)
+  state     String?
   metadata  Json?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([id_source, type], name: "source_type")
   @@map("tasks")
 }
 
