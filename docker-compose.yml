@@ -3,7 +3,7 @@ version: '3.5'
 services:
   nodejs:
     build: .
-    image: be_checkin
+    image: backend_service
     ports:
       - 3000:3000
     depends_on:
@@ -24,7 +24,7 @@ services:
     command: redis-server --requirepass !CnJbIcJqew
 
   postgres:
-    container_name: db_checkin
+    container_name: backend_service_db
     image: postgres:15.1-alpine
     environment:
       POSTGRES_USER: root
@@ -33,7 +33,6 @@ services:
       PGDATA: /data/postgres
     volumes:
        - postgres:/data/postgres
-       - ./backup:/home
     ports:
       - 5432:5432
     networks:
