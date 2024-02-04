@@ -1,39 +1,46 @@
 const httpStatus = require("http-status");
-const { liveService } = require("../services");
+const { liveService, transcodeService } = require("../services");
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 
 const onConnect = catchAsync(async (req, res) => {
   let {app: liveKey, swfurl} = req.body
-
+  const apps = ["live", "nr_live", "t_live"]
   if(Array.isArray(liveKey)){
     liveKey = liveKey[0]
   }
 
-  if (liveKey != "live" && liveKey != "transcode_live" && swfurl != ""){
+  if(!apps.includes(liveKey) && swfurl != ""){
     throw new ApiError(httpStatus.BAD_REQUEST, "app not found");
   }
+
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
 const onPlay = catchAsync(async (req, res) => {
   let { token, secret } = req.body
+  console.log(req.body);
   if(secret && secret == process.env.SECRET_TRANSCODE){
-    res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
+    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
   }
 
-  if(!token){
-    throw new ApiError(httpStatus.BAD_REQUEST, "token not valid");
-  }
+  // if(!token){
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "token not valid");
+  // }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
 const onPublish = catchAsync(async (req, res) => {
-  liveKey = req.body.name.split("_")[0]
+  const {name, app} = req.body
+  const liveKey = name.split("_")[0]
   const live = await liveService.getByLiveKey(liveKey)
   if (!live){
     throw new ApiError(httpStatus.BAD_REQUEST, "live key not found");
+  }
+
+  if(app === "live" || app === "nr_live"){
+    await transcodeService.startTranscodeLive(liveKey)
   }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });

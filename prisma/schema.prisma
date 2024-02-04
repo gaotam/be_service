@@ -30,6 +30,7 @@ model User {
 model LiveStream {
   id        String   @id @default(uuid())
   liveKey   String   @db.VarChar(20)
+  isRecord  Boolean  @default(false)
   status    Status   @default(IDLE)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

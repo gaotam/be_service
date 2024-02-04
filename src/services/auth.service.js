@@ -15,6 +15,14 @@ const login = async (email, password) => {
     );
   }
   
+  console.log(user);
+  if(user.isLock){
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "user is locked"
+    );
+  }
+
   return user;
 };
 

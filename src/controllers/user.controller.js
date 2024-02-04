@@ -47,6 +47,13 @@ const updateById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {user: user}, error: null });
 })
 
+const lockUserById = catchAsync(async (req, res) => {
+  const { userId } = req.params
+  const { isLock } = req.body
+  const user = await userService.lockUserById(userId, isLock)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {user: user}, error: null });
+})
+
 const updateFace = catchAsync(async (req, res) => {
   const { id } = req.user;
   const isUpdate = cache.get(`face-${id}`);
@@ -78,4 +85,5 @@ module.exports = {
   updateById,
   deleteImage,
   updateFace,
+  lockUserById
 };

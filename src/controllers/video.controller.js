@@ -1,9 +1,10 @@
 const httpStatus = require("http-status");
-const { videoService, liveService } = require("../services");
+const { videoService, liveService, transcodeService } = require("../services");
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
 
 const create = catchAsync(async (req, res) => {
+  let live = null
   const data = { categoryId, title, desc, isLive, disableComment } = req.body
   const userId = req.user.id
   data.isLive = isLive === "true"
@@ -21,12 +22,16 @@ const create = catchAsync(async (req, res) => {
   }
   
   if (data.isLive) {
-    const live = await liveService.create({})
+    live = await liveService.create({})
     data.livestreamId = live.id
   }
 
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
+  if (!video.isLive){
+    await transcodeService.startTranscodeVideo(video.id)
+  } 
+  
   const videoRes = exclude(video, ['password']);
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: { video: videoRes}, error: "" });
 });

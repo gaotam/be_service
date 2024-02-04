@@ -8,6 +8,6 @@ const router = express.Router();
 
 router.get('/', validate(userValidation.getAll), userController.getAll);
 router.get('/:userId', userController.getById);
-// router.put('/:id', upload.single('image'), validate(userValidation.updateById), userController.updateById);
+router.put('/:userId', userController.lockUserById);
 
 module.exports = router;

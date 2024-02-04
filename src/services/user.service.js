@@ -159,6 +159,36 @@ const updateById = async (id, data) => {
   return updateUser;
 };
 
+const lockUserById = async (id, isLock) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
+  }
+
+  const updateUser = await prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      isLock
+    },
+    select: {
+      id: true,
+      fullname: true,
+      email: true,
+      avatar: true,
+      isLock: true
+    },
+  });
+
+  return updateUser;
+}
+
 const deleteImage = async (userId) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -189,4 +219,5 @@ module.exports = {
   getUserByEmail,
   updateById,
   deleteImage,
+  lockUserById
 };
