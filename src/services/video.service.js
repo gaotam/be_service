@@ -5,7 +5,7 @@ const ApiError = require("../utils/ApiError");
 const { Role } = require("@prisma/client");
 
 const getOne = async (q) => {
-  const user = await prisma.user.findFirst({
+  const user = await prisma.video.findFirst({
     where: {
       OR: [{ phone: q }, { email: q }],
     },
@@ -42,28 +42,27 @@ const create = async (videoBody) => {
   return video;
 };
 
-
-const getById = async (userId) => {
-  const user = await prisma.user.findUnique({
+const getById = async (videoId) => {
+  const video = await prisma.video.findUnique({
     where: {
-      id: userId,
+      id: videoId,
     },
-    select: {
-      id: true,
-      fullName: true,
-      course: true,
-      email: true,
-      phone: true,
-      image: true,
-      facebook: true,
-    },
+    // select: {
+    //   id: true,
+    //   fullName: true,
+    //   course: true,
+    //   email: true,
+    //   phone: true,
+    //   image: true,
+    //   facebook: true,
+    // },
   });
 
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
+  if (!video) {
+    throw new ApiError(httpStatus.NOT_FOUND, "video does not exist");
   }
 
-  return user;
+  return video;
 };
 
 const getUnique = async (email) => {
@@ -195,5 +194,6 @@ const deleteById = async (id) => {
 module.exports = {
   create,
   getAll,
+  getById,
   deleteById
 };

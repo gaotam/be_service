@@ -5,6 +5,8 @@ const userRouter = require('./user.route');
 const categoryRouter = require('./category.route');
 const videoRouter = require('./video.route');
 const liveRouter = require('./live.route');
+const commentRouter = require('./comment.route');
+
 const { protect, authorize } = require("../../middlewares/auth")
 
 const defaultRoutes = [
@@ -31,7 +33,10 @@ const defaultRoutes = [
 ];
 
 const protectRoutes = [
-  
+  {
+    path: "/comments",
+    route: commentRouter
+  }
 ];
 
 defaultRoutes.forEach((route) => {
