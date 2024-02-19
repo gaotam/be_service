@@ -1,4 +1,5 @@
 const httpStatus = require("http-status");
+const axios = require("axios");
 const { liveService, transcodeService } = require("../services");
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
@@ -40,7 +41,7 @@ const onPublish = catchAsync(async (req, res) => {
   }
 
   if(app === "live" || app === "nr_live"){
-    await transcodeService.startTranscodeLive(liveKey)
+    // await transcodeService.startTranscodeLive(liveKey)
   }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
@@ -65,4 +66,9 @@ const onRecordDone = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone }
+const analyst = catchAsync(async (req, res) => {
+  const { data } = await axios.get(`${process.env.ENPOINT_RTMP_SERVER}/stat`)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: "" });
+});
+
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, analyst }

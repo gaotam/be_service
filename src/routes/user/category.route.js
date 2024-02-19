@@ -6,7 +6,7 @@ const { uploadAvatar } = require("../../utils/upload")
 
 const router = express.Router();
 
-router.post('/', auth.protect, categoryController.create);
+// router.post('/', auth.protect, categoryController.create);
 // router.put('/', auth.protect, uploadAvatar.single("avatar"), userController.updateById);
 
 module.exports = router;

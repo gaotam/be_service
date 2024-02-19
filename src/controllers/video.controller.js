@@ -38,8 +38,14 @@ const create = catchAsync(async (req, res) => {
 
 const getAll = catchAsync(async (req, res) => {
   videos = await videoService.getAll({}, {})
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { videos: videos }, error: "" });
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
+
+const getById = catchAsync(async (req, res) => {
+  const { id } = req.params
+  video = await videoService.getById(id)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });
+})
 
 const deleteById = catchAsync(async (req, res) => {
   const { id } = req.params
@@ -50,5 +56,6 @@ const deleteById = catchAsync(async (req, res) => {
 module.exports = {
   create,
   getAll,
+  getById,
   deleteById
 };

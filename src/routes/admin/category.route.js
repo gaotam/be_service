@@ -5,6 +5,7 @@ const { auth, validate } = require("../../middlewares");
 const router = express.Router();
 
 router.get('/', categoryController.getAll);
+router.post('/', categoryController.create);
 router.put('/:id', categoryController.updateById);
 router.delete('/:id', categoryController.deleteById);
 

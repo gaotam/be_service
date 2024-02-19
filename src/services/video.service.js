@@ -47,15 +47,23 @@ const getById = async (videoId) => {
     where: {
       id: videoId,
     },
-    // select: {
-    //   id: true,
-    //   fullName: true,
-    //   course: true,
-    //   email: true,
-    //   phone: true,
-    //   image: true,
-    //   facebook: true,
-    // },
+    select: {
+      id: true,
+      category: true,
+      user: {
+        select: {
+          id: true,
+          fullname: true,
+          avatar: true
+        }
+      },
+      livestream: true,
+      desc: true,
+      createdAt: true,
+      like: true,
+      dislike: true,
+      title: true,
+    },
   });
 
   if (!video) {
@@ -63,17 +71,6 @@ const getById = async (videoId) => {
   }
 
   return video;
-};
-
-const getUnique = async (email) => {
-  return prisma.user.findFirst({
-    where: {
-      email: email
-    },
-    select: {
-      id: true,
-    },
-  });
 };
 
 const getAll = async (filter, options) => {
@@ -97,12 +94,18 @@ const getAll = async (filter, options) => {
   //   where["isCheckin"] = true;
   // }
 
-  const [users, total] = await prisma.$transaction([
+  const [videos, total] = await prisma.$transaction([
     prisma.video.findMany({
       where,
       select: {
         id: true,
-        userId: true,
+        user: {
+          select: {
+            id: true,
+            fullname: true,
+            avatar: true,
+          }
+        },
         category: true,
         title: true,
         desc: true,
@@ -119,10 +122,10 @@ const getAll = async (filter, options) => {
       take: limit,
       orderBy: sortBy ? { [sortBy]: "desc" } : undefined,
     }),
-    prisma.user.count({ where: where }),
+    prisma.video.count({ where: where }),
   ]);
 
-  return { users, total, page, limit };
+  return { videos, total, page, limit };
 };
 
 const getUserByEmail = async (email) => {

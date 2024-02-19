@@ -19,14 +19,6 @@ const defaultRoutes = [
     route: categoryRouter
   },
   {
-    path: "/users",
-    route: userRouter
-  },
-  {
-    path: "/videos",
-    route: videoRouter
-  },
-  {
     path: "/live",
     route: liveRouter
   }
@@ -34,9 +26,17 @@ const defaultRoutes = [
 
 const protectRoutes = [
   {
+    path: "/users",
+    route: userRouter
+  },
+  {
     path: "/comments",
     route: commentRouter
-  }
+  },
+  {
+    path: "/videos",
+    route: videoRouter
+  },
 ];
 
 defaultRoutes.forEach((route) => {

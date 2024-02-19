@@ -12,7 +12,7 @@ const create = catchAsync(async (req, res) => {
 
 const getAll = catchAsync(async (req, res) => {
   categories = await catergoryService.getAll()
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { category: categories }, error: "" });
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { categories: categories }, error: "" });
 });
 
 const updateById = catchAsync(async (req, res) => {

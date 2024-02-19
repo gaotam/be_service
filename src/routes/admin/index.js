@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const userRouter = require('./user.route');
-const authRouter = require('./auth.route');
+const videoRouter = require('./video.route');
+const liveRouter = require('./live.route');
 const categoryRouter = require('./category.route');
 
 const { protect, authorize } = require("../../middlewares/auth")
@@ -14,7 +15,15 @@ const adminRoutes = [
   {
     path: "/categories",
     route: categoryRouter
-  }
+  },
+  {
+    path: "/videos",
+    route: videoRouter
+  },
+  {
+    path: "/lives",
+    route: liveRouter
+  },
 ];
 
 adminRoutes.forEach((route) => {
