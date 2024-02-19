@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/', videoController.getAll);
 router.get('/:id', videoController.getById);
-router.post('/', uploadVideo.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'video', maxCount: 1 }]), videoController.create);
-router.delete('/:id', videoController.deleteById);
+router.post('/', auth.protect, uploadVideo.fields([{ name: 'thumbnail', maxCount: 1 }, { name: 'video', maxCount: 1 }]), videoController.create);
+router.delete('/:id', auth.protect, videoController.deleteById);
 
 module.exports = router;

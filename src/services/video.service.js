@@ -116,7 +116,8 @@ const getAll = async (filter, options) => {
         dislike: true,
         metadata: true,
         disableComment: true,
-        isLive: true
+        isLive: true,
+        createdAt: true,
       },
       skip: (page - 1) * limit,
       take: limit,

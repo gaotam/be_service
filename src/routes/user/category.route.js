@@ -6,6 +6,7 @@ const { uploadAvatar } = require("../../utils/upload")
 
 const router = express.Router();
 
+router.get('/', categoryController.getAll);
 // router.post('/', auth.protect, categoryController.create);
 // router.put('/', auth.protect, uploadAvatar.single("avatar"), userController.updateById);
 

@@ -21,7 +21,11 @@ const defaultRoutes = [
   {
     path: "/live",
     route: liveRouter
-  }
+  },
+  {
+    path: "/videos",
+    route: videoRouter
+  },
 ];
 
 const protectRoutes = [
@@ -33,10 +37,7 @@ const protectRoutes = [
     path: "/comments",
     route: commentRouter
   },
-  {
-    path: "/videos",
-    route: videoRouter
-  },
+  
 ];
 
 defaultRoutes.forEach((route) => {
