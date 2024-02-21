@@ -62,7 +62,11 @@ const getById = async (videoId) => {
       createdAt: true,
       like: true,
       dislike: true,
+      thumbnail: true,
       title: true,
+      views: true,
+      srcTranscode: true,
+      createdAt: true
     },
   });
 

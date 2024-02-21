@@ -36,11 +36,11 @@ if (config.env !== 'test') {
 }
 
 // set security HTTP headers
-app.use(
-  helmet({
-    contentSecurityPolicy: false,
-  })
-);
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: false,
+//   })
+// );
 
 // parse cookie
 app.use(cookieParser('hoang'));
@@ -61,8 +61,9 @@ app.use(compression());
 app.use(cors());
 app.options('*', cors());
 
-app.use("/static", express.static(path.join(__dirname, "uploads")));
+app.use("/static", express.static(path.join(__dirname, "../../uploads")));
 
+console.log(path.join(__dirname, "../uploads"));
 // v1 api routes
 app.use("/api/admin/v1", adminRoute)
 app.use("/api/v1", userRoute);
