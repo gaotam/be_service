@@ -133,20 +133,6 @@ const getAll = async (filter, options) => {
   return { videos, total, page, limit };
 };
 
-const getUserByEmail = async (email) => {
-  const user = await prisma.user.findFirst({
-    where: {
-      email: email
-    }
-  });
-
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
-  }
-
-  return user;
-};
-
 const updateById = async (id, data) => {
   const { fullname, email, avatar, gender } = data;
   
@@ -181,6 +167,29 @@ const updateById = async (id, data) => {
   return updateUser;
 };
 
+const upViews = async(id, count) => {
+  const video = await prisma.video.findUnique({
+    where: {
+      id,
+    },
+  });
+  
+  if (!video) {
+    throw new ApiError(httpStatus.NOT_FOUND, "video does not exist");
+  }
+
+  await prisma.video.update({
+    where: {
+      id,
+    },
+    data: {
+      views: {
+        increment: count
+      }
+    },
+  });
+}
+
 const deleteById = async (id) => {
   const video = await prisma.video.findUnique({
     where: {
@@ -199,9 +208,45 @@ const deleteById = async (id) => {
   });
 };
 
+const getVideoTrending = async () => {
+  const video = await prisma.video.findMany({
+    where: {
+      createdAt: {
+        gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+      },
+    },
+    orderBy: [
+      {
+        views: "desc",
+      },
+      {
+        like: "desc"
+      }
+    ],
+    take: 10,
+    select: {
+      id: true,
+      title: true,
+      thumbnail: true,
+      views: true,
+      desc: true,
+      createdAt: true,
+      user: {
+        select: {
+          fullname: true
+        }
+      }
+    }
+  })
+
+  return video
+}
+
 module.exports = {
   create,
   getAll,
   getById,
-  deleteById
+  deleteById,
+  upViews,
+  getVideoTrending
 };

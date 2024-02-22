@@ -8,7 +8,7 @@ const login = catchAsync(async (req, res) => {
   const { account, password } = req.body;
   const user = await authService.login(account, password);
   const token = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {access_token: token}, error: "" });
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {access_token: token, user: user}, error: "" });
 });
 
 const signup = catchAsync(async (req, res) => {

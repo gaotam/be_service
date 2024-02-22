@@ -115,6 +115,12 @@ const getUserByEmail = async (email) => {
   const user = await prisma.user.findFirst({
     where: {
       email: email
+    },
+    select: {
+      fullname: true,
+      avatar: true,
+      id: true,
+      password: true
     }
   });
 

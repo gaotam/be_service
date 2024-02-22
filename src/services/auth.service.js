@@ -22,6 +22,7 @@ const login = async (email, password) => {
     );
   }
 
+  delete user.password
   return user;
 };
 

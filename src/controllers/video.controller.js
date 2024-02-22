@@ -43,19 +43,26 @@ const getAll = catchAsync(async (req, res) => {
 
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
-  video = await videoService.getById(id)
+  const video = await videoService.getById(id)
+  await videoService.upViews(id, 1);
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });
 })
 
 const deleteById = catchAsync(async (req, res) => {
   const { id } = req.params
-  video = await videoService.deleteById(id)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { video: video }, error: "" });
+  await videoService.deleteById(id)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
+});
+
+const getVideoTrending = catchAsync(async (req, res) => {
+  const video = await videoService.getVideoTrending()
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });
 });
 
 module.exports = {
   create,
   getAll,
   getById,
-  deleteById
+  deleteById,
+  getVideoTrending
 };
