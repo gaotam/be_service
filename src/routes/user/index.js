@@ -6,6 +6,8 @@ const categoryRouter = require('./category.route');
 const videoRouter = require('./video.route');
 const liveRouter = require('./live.route');
 const commentRouter = require('./comment.route');
+const historyRouter = require('./history.route');
+
 
 const { protect, authorize } = require("../../middlewares/auth")
 
@@ -37,7 +39,10 @@ const protectRoutes = [
     path: "/comments",
     route: commentRouter
   },
-  
+  {
+    path: "/history",
+    route: historyRouter
+  },
 ];
 
 defaultRoutes.forEach((route) => {

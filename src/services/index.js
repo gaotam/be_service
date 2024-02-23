@@ -9,4 +9,6 @@ module.exports.catergoryService = require('./category.service');
 module.exports.videoService = require('./video.service');
 module.exports.liveService = require('./live.service');
 module.exports.commentService = require('./comment.service');
+module.exports.historyService = require('./history.service');
+
 

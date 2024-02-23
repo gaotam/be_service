@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const { videoService, liveService, transcodeService } = require("../services");
+const { videoService, liveService, transcodeService, historyService } = require("../services");
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
 
@@ -43,6 +43,10 @@ const getAll = catchAsync(async (req, res) => {
 
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
+
+  if(req.user){
+    await historyService.create(req.user.id, id);
+  }
   const video = await videoService.getById(id)
   await videoService.upViews(id, 1);
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });

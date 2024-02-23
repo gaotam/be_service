@@ -23,7 +23,7 @@ model User {
   subs      Subscription[] @relation("user")
   subUsers  Subscription[] @relation("sub_user")
   comments  Comment[]
-
+  history   History[]
   @@map("users")
 }
 
@@ -72,6 +72,7 @@ model Video {
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
   comments       Comment[]
+  history        History[]
 
   @@map("videos")
 }
@@ -86,6 +87,18 @@ model Subscription {
   updatedAt DateTime @updatedAt
 
   @@map("subscriptions")
+}
+
+model History {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  userId    String
+  videoId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("history")
 }
 
 model Comment {
