@@ -18,11 +18,33 @@ const create = async (categoryBody) => {
 const getAll = async () => {
   return prisma.category.findMany({
     select: {
+      id: true,
       name: true,
       index: true
     }
   }) 
 }
+
+const getByName = async (name) => {
+  if(name == "music"){
+    name = "Âm nhạc"
+  }
+  else if(name == "game"){
+    name = "Trò chơi"
+  }
+  
+  const category = await prisma.category.findFirst({
+    where: {
+      name
+    },
+  });
+
+  if (!category) {
+    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
+  }
+
+  return category;
+};
 
 const updateById = async (id, data) => {
   const { name, index } = data;
@@ -75,6 +97,7 @@ const deleteById = async (id) => {
 module.exports = {
   create,
   getAll,
+  getByName,
   updateById,
   deleteById
 };

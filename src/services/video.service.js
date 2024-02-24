@@ -2,7 +2,6 @@ const httpStatus = require("http-status");
 const prisma = require("../client");
 const cache = require("../config/cache");
 const ApiError = require("../utils/ApiError");
-const { Role } = require("@prisma/client");
 
 const getOne = async (q) => {
   const user = await prisma.video.findFirst({
@@ -78,7 +77,7 @@ const getById = async (videoId) => {
 };
 
 const getAll = async (filter, options) => {
-  const { q } = filter;
+  const { q, createdAt, duration } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
@@ -92,6 +91,46 @@ const getAll = async (filter, options) => {
     }
   }
 
+  if(duration){
+    if(duration == 1){
+      where["duration"] = {
+        lt: 240
+      }
+    } else if(duration == 2){
+      where["duration"] = {
+        gte: 240,
+        lte: 1200
+      }
+    } else {
+      where["duration"] = {
+        gt: 1200,
+      }
+    }
+  }
+
+  if(createdAt){
+    if(createdAt == "h"){
+      where["createdAt"] = {
+        gte: new Date(Date.now() - 60 * 60 * 1000),
+      }
+    } else if(createdAt == "today") {
+      where["createdAt"] = {
+        gte: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      }
+    } else if(createdAt == "w") {
+      where["createdAt"] = {
+        gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
+      }
+    } else if(createdAt == "m") {
+      where["createdAt"] = {
+        gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
+      }
+    } else if(createdAt == "y") {
+      where["createdAt"] = {
+        gte: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000),
+      }
+    }
+  }
   const [videos, total] = await prisma.$transaction([
     prisma.video.findMany({
       where,
@@ -115,6 +154,7 @@ const getAll = async (filter, options) => {
         metadata: true,
         disableComment: true,
         isLive: true,
+        duration: true,
         createdAt: true,
       },
       skip: (page - 1) * limit,
@@ -126,6 +166,101 @@ const getAll = async (filter, options) => {
 
   return { videos, total, page, limit };
 };
+
+const getVideoByType = async(type, categoryId) => {
+  let query = {
+    select: {
+      id: true,
+      user: {
+        select: {
+          id: true,
+          fullname: true,
+          avatar: true,
+        }
+      },
+      category: true,
+      title: true,
+      desc: true,
+      src: true,
+      thumbnail: true,
+      views: true,
+      like: true,
+      dislike: true,
+      metadata: true,
+      disableComment: true,
+      isLive: true,
+      createdAt: true,
+    },
+    take: 50
+  }
+  if(type == "trending"){
+    query = {
+      ...query,
+      where: {
+        categoryId: categoryId,
+        createdAt: {
+          gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
+        },
+      },
+      orderBy: [
+        {
+          views: "desc",
+        },
+        {
+          like: "desc"
+        }
+      ],
+    }
+  } else if(type == "new"){
+    query = {
+      ...query,
+      where: {
+        categoryId: categoryId
+      },
+      orderBy: [
+        {
+          createdAt: "desc",
+        }
+      ],
+    }
+  } else if(type == "propose"){
+    const videos = await prisma.$queryRawUnsafe(
+      `
+      SELECT *
+      FROM "videos" 
+      INNER JOIN categories ON videos."categoryId" = categories.id 
+      INNER JOIN users ON users."id" = videos."userId"
+      ORDER BY RANDOM() 
+      LIMIT 50;`,
+    )
+
+    return videos.map(v => {
+      return {
+        id: v.id,
+        title: v.title,
+        user: {
+          id: v.userId,
+          fullname: v.fullname,
+          avatar: v.avatar
+        },
+        category: {
+          id: v.categoryId,
+          index: v.index,
+          name: v.name
+        },
+        title: v.title,
+        desc: v.desc,
+        src: v.src,
+        thumbnail: v.thumbnail,
+        views: v.views,
+        like: v.like,
+        createdAt: v.createdAt
+      }
+    })
+  }
+
+  return prisma.video.findMany(query);
+}
 
 const updateById = async (id, data) => {
   const { fullname, email, avatar, gender } = data;
@@ -217,7 +352,7 @@ const getVideoTrending = async () => {
         like: "desc"
       }
     ],
-    take: 10,
+    take: 20,
     select: {
       id: true,
       title: true,
@@ -242,5 +377,6 @@ module.exports = {
   getById,
   deleteById,
   upViews,
-  getVideoTrending
+  getVideoTrending,
+  getVideoByType
 };

@@ -37,11 +37,10 @@ const getAll = async (filter, options) => {
     }
   }
 
-  const [users, total] = await prisma.$transaction([
+  const [history, total] = await prisma.$transaction([
     prisma.history.findMany({
       where,
       select: {
-        id: true,
         user: {
           select: {
             id: true,
@@ -66,7 +65,7 @@ const getAll = async (filter, options) => {
     prisma.history.count({ where: where }),
   ]);
 
-  return { users, total, page, limit };
+  return { history, total, page, limit };
 };
 
 const deleteByUserId = async (userId) => {  

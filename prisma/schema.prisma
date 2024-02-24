@@ -60,6 +60,7 @@ model Video {
   livestreamId   String?
   title          String      @db.VarChar(100)
   desc           String      @db.VarChar(200)
+  duration       Int?         
   src            String?
   srcTranscode   String?
   thumbnail      String?

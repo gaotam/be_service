@@ -1,8 +1,9 @@
 const httpStatus = require("http-status");
-const { videoService, liveService, transcodeService, historyService } = require("../services");
+const { videoService, liveService, transcodeService, historyService, catergoryService } = require("../services");
 const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
+const ApiError = require("../utils/ApiError");
 
 const create = catchAsync(async (req, res) => {
   let live = null
@@ -38,11 +39,23 @@ const create = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['q']);
+  const filter = pick(req.query, ['q', 'createdAt', 'duration']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   videos = await videoService.getAll(filter, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
+
+const category = catchAsync(async (req, res) => {
+  const { name } = req.params
+  const { type } = req.query
+  if(name != "music" && name != "game"){
+    throw new ApiError(httpStatus.BAD_REQUEST, "category not valid");
+  }
+
+  const { id } = await catergoryService.getByName(name)
+  const videos = await videoService.getVideoByType(type, id);
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+})
 
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
@@ -71,5 +84,6 @@ module.exports = {
   getAll,
   getById,
   deleteById,
-  getVideoTrending
+  getVideoTrending,
+  category
 };
