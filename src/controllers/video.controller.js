@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const { videoService, liveService, transcodeService, historyService } = require("../services");
+const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
 
@@ -37,7 +38,9 @@ const create = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-  videos = await videoService.getAll({}, {})
+  const filter = pick(req.query, ['q']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  videos = await videoService.getAll(filter, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 

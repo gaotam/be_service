@@ -78,7 +78,7 @@ const getById = async (videoId) => {
 };
 
 const getAll = async (filter, options) => {
-  // const { q, checkin } = filter;
+  const { q } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
@@ -86,17 +86,11 @@ const getAll = async (filter, options) => {
   const where = {
   };
 
-  // if (q) {
-  //   where["OR"] = [
-  //     { phone: q },
-  //     { email: q },
-  //     { fullName: { contains: q, mode: "insensitive" } },
-  //   ];
-  // }
-
-  // if (checkin == 1) {
-  //   where["isCheckin"] = true;
-  // }
+  if (q) {
+    where["title"] = {
+      contains: q
+    }
+  }
 
   const [videos, total] = await prisma.$transaction([
     prisma.video.findMany({
