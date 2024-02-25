@@ -1,9 +1,28 @@
 const httpStatus = require("http-status");
 const axios = require("axios");
-const { liveService, transcodeService } = require("../services");
+const { liveService, videoService } = require("../services");
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
+
+const create = catchAsync(async (req, res) => {
+  const data = { categoryId, title, desc, disableComment, isRecord } = req.body
+  const userId = req.user.id
+
+  if(req.files?.thumbnail[0]){
+    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+  }
+
+  const live = await liveService.create({isRecord: isRecord === "true"})
+  delete data.isRecord
+  data.livestreamId = live.id
+
+  data.disableComment = disableComment === "true"
+
+  let video = await videoService.create({...data, userId: userId})
+  const videoRes = exclude(video, ['password']);
+  res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: { video: videoRes}, error: "" });
+})
 
 const onConnect = catchAsync(async (req, res) => {
   let {app: liveKey, swfurl} = req.body
@@ -71,4 +90,4 @@ const analyst = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, analyst }
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst }

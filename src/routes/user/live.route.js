@@ -1,12 +1,11 @@
 const express = require('express');
 const { liveController } = require('../../controllers');
-const { rateLimit, validate } = require("../../middlewares");
-const userValidation = require('../../validations/user.validation');
 const { protect } = require("../../middlewares/auth")
-const { updateFace } = require("../../utils/upload")
+const { uploadVideo } = require("../../utils/upload")
 
 const router = express.Router();
 
+router.post('/', protect, uploadVideo.single("thumnail"), liveController.create);
 router.post('/on_connect', liveController.onConnect);
 router.post('/on_play', liveController.onPlay);
 router.post('/on_publish', liveController.onPublish);

@@ -31,7 +31,27 @@ const getOne = async (q) => {
 
 const create = async (videoBody) => {
   const video = await prisma.video.create({
-    data: videoBody
+    data: videoBody,
+    select: {
+      id: true,
+      title: true,
+      desc: true,
+      user: {
+        select: {
+          id: true,
+          fullname: true
+        }
+      },
+      category: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      livestream: true,
+      views: true,
+      disableComment: true,
+    }
   })
 
   if (!video) {

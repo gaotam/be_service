@@ -7,11 +7,10 @@ const ApiError = require("../utils/ApiError");
 
 const create = catchAsync(async (req, res) => {
   let live = null
-  const data = { categoryId, title, desc, isLive, disableComment } = req.body
+  const data = { categoryId, title, desc, disableComment } = req.body
   const userId = req.user.id
-  data.isLive = isLive === "true"
 
-  if(isLive && !req.files?.video && req.files?.video.length == 0){
+  if(!req.files?.video && req.files?.video.length == 0){
     return res.status(httpStatus.BAD_REQUEST).send({ code: httpStatus.BAD_REQUEST, message: "", data: null, error: "video is required" });
   }
 
@@ -19,21 +18,13 @@ const create = catchAsync(async (req, res) => {
     data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
   }
 
-  if(isLive && req.files?.video && req.files?.video.length > 0){
+  if(req.files?.video && req.files?.video.length > 0){
     data["src"] = `/videos/${req.files?.video[0].filename}`;
   }
   
-  if (data.isLive) {
-    live = await liveService.create({})
-    data.livestreamId = live.id
-  }
-
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
-  if (!video.isLive){
-    await transcodeService.startTranscodeVideo(video.id)
-  } 
-  
+  // await transcodeService.startTranscodeVideo(video.id)
   const videoRes = exclude(video, ['password']);
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: { video: videoRes}, error: "" });
 });
