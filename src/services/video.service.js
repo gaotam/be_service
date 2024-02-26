@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const prisma = require("../client");
 const cache = require("../config/cache");
 const ApiError = require("../utils/ApiError");
+const categoryService = require("./category.service")
 
 const getOne = async (q) => {
   const user = await prisma.video.findFirst({
@@ -48,6 +49,7 @@ const create = async (videoBody) => {
           name: true
         }
       },
+      isLive: true,
       livestream: true,
       views: true,
       disableComment: true,
@@ -85,7 +87,8 @@ const getById = async (videoId) => {
       title: true,
       views: true,
       srcTranscode: true,
-      createdAt: true
+      createdAt: true,
+      disableComment: true,
     },
   });
 
@@ -357,13 +360,26 @@ const deleteById = async (id) => {
   });
 };
 
-const getVideoTrending = async () => {
-  const video = await prisma.video.findMany({
-    where: {
-      createdAt: {
-        gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
-      },
+const getVideoTrending = async (type) => {
+  let where = {
+    createdAt: {
+      gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000),
     },
+    isLive: false,
+  }
+  if(type == "music"){
+    const { id } = await categoryService.getByName("Âm nhạc")
+    where["categoryId"] = id
+  } else if(type == "game"){
+    const { id } = await categoryService.getByName("Trò chơi")
+    where["categoryId"] = id
+  } else if(type == "film"){
+    const { id } = await categoryService.getByName("Phim ảnh")
+    where["categoryId"] = id
+  }
+
+  const video = await prisma.video.findMany({
+    where,
     orderBy: [
       {
         views: "desc",
@@ -380,6 +396,12 @@ const getVideoTrending = async () => {
       views: true,
       desc: true,
       createdAt: true,
+      category: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
       user: {
         select: {
           fullname: true

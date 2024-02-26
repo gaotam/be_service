@@ -86,7 +86,7 @@ const authorize = (role) => async (req, res, next) => {
   next(new ApiError(httpStatus.FORBIDDEN, 'forbidden'));
 };
 
-const checkAuth = async(req, res, next) => {
+const checkAuth = catchAsync(async(req, res, next) => {
   let token = null;
   if (req.headers.authorization?.startsWith("Bearer")) {
     token = req.headers.authorization.split(" ")[1];
@@ -118,6 +118,6 @@ const checkAuth = async(req, res, next) => {
   req.user = user;
   cache.set(`user-${userId}`, user)
   return next();
-}
+})
 
 module.exports = { protect, protectSocket, authorize, checkAuth }

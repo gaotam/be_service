@@ -7,6 +7,7 @@
     "start": "cross-env NODE_ENV=production node src/index.js",
     "start:db": "docker compose up postgres -d",
     "start:docker": "cross-env NODE_ENV=production pm2-runtime src/index.js",
+    "dev:seed": "node ./src/seed/index.js up",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "migrate": "prisma migrate dev",
     "debug:prisma": "export DEBUG=\"prisma:client,prisma:engine\"",

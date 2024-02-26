@@ -3,7 +3,6 @@ const httpStatus = require("http-status");
 const prisma = require("../client");
 const cache = require("../config/cache");
 const ApiError = require("../utils/ApiError");
-const { Role } = require("@prisma/client");
 
 const create = async (liveBody) => {
   const live = await prisma.liveStream.create({
@@ -31,7 +30,58 @@ const getByLiveKey = async(liveKey) => {
   });
 }
 
+const updateById = async (id, {categoryId, title, desc, disableComment, isRecord}) => {
+  const video = await prisma.video.findUnique({
+    where: {
+      id,
+    },
+    select: {
+      livestream: true
+    }
+  });
+  
+  if (!video) {
+    throw new ApiError(httpStatus.NOT_FOUND, "live does not exist");
+  }
+
+  await prisma.liveStream.update({
+    where: {
+      id: video.livestream.id,
+    },
+    data: {
+      isRecord
+    }
+  })
+
+  const updateVideo = await prisma.video.update({
+    where: {
+      id,
+    },
+    data: {
+      title,
+      categoryId,
+      desc,
+      disableComment,
+    },
+  });
+
+  return updateVideo;
+}
+
+const updateStatus = async (liveKey, status) => {
+  await prisma.liveStream.updateMany({
+    where: {
+      liveKey: liveKey,
+    },
+    data: {
+      status
+    }
+  })
+}
+
 module.exports = {
   create,
-  getByLiveKey
+  getByLiveKey,
+  updateById,
+  updateStatus
 };

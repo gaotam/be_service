@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player livestream</title>
+    <script src="https://cdn.jsdelivr.net/npm/dplayer@1.27.1/dist/DPlayer.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flv.js/1.3.4/flv.min.js" integrity="sha512-KLi4op5vXgFsGIJSiq6DrHX7oD1YuOuReQFA5OrIEp6AibGr6g1XN6yblS9MATl/ni4bmqcvioAH3KC9teBDeA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="dplayer"></div>
+    <script>
+        const initPlayer = (defaultQuality) => {
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            const liveKey = urlParams.get('liveKey');
+            const thumbnail = urlParams.get('thumbnail');
+
+            return new DPlayer({
+                container: document.getElementById('dplayer'),
+                live: true,
+                video: {
+                    quality: [
+                        {
+                            name: 'Origin',
+                            url: `http://localhost:8000/live?port=1935&app=live&stream=${liveKey}`,
+                            index: 0,
+                            type: 'flv',
+                        },
+                        {
+                            name: '1080P',
+                            url: `http://localhost:8000/live?port=1935&app=t_live&stream=${liveKey}_1080p`,
+                            index: 1,
+                            type: 'flv',
+                        },
+                        {
+                            name: '720P',
+                            url: `http://localhost:8000/live?port=1935&app=t_live&stream=${liveKey}_720p`,
+                            index: 2,
+                            type: 'flv',
+                        },
+                        {
+                            name: '480P',
+                            url: `http://localhost:8000/live?port=1935&app=t_live&stream=${liveKey}_480p`,
+                            index: 3,
+                            type: 'flv',
+                        },
+                        {
+                            name: '360P',
+                            url: `http://localhost:8000/live?port=1935&app=t_live&stream=${liveKey}_360p`,
+                            index: 4,
+                            type: 'flv',
+                        },
+                    ],
+                    defaultQuality: defaultQuality,
+                    pic: thumbnail,
+                    thumbnails: thumbnail,
+                },
+            });
+        }
+
+        const restartPlayer = (index) => {
+            dp.destroy();
+            dp = initPlayer(index);
+            dp.fullScreen.request('web');
+            dp.play()
+            dp.on("quality_start", ({index}) => {
+                restartPlayer(index);
+            });
+        }
+    </script>
+    <script>
+        let defaultQuality = 0;
+        let dp = initPlayer(defaultQuality)
+        dp.fullScreen.request('web');
+        dp.play()
+        dp.on("quality_start", ({index}) => {
+            restartPlayer(index)
+        })
+    </script>
+</body>
+</html>

@@ -6,7 +6,6 @@ const exclude = require('../utils/exclude');
 const ApiError = require("../utils/ApiError");
 
 const create = catchAsync(async (req, res) => {
-  let live = null
   const data = { categoryId, title, desc, disableComment } = req.body
   const userId = req.user.id
 
@@ -66,7 +65,8 @@ const deleteById = catchAsync(async (req, res) => {
 });
 
 const getVideoTrending = catchAsync(async (req, res) => {
-  const video = await videoService.getVideoTrending()
+  const { type } = req.query
+  const video = await videoService.getVideoTrending(type)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });
 });
 

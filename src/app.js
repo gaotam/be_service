@@ -13,8 +13,8 @@ const morgan = require('./config/morgan');
 const ApiError = require('./utils/ApiError');
 const httpStatus = require('http-status');
 const socketServices = require("./services/socket.service")
-const { userRoute, adminRoute } = require("./routes");
-const { errorConverter, errorHandler, a } = require('./middlewares/error');
+const { userRoute, adminRoute, viewRoute } = require("./routes");
+const { errorConverter, errorHandler } = require('./middlewares/error');
 const { protectSocket } = require('./middlewares/auth');
 
 const app = express();
@@ -63,16 +63,21 @@ app.options('*', cors());
 
 app.use("/static", express.static(path.join(__dirname, "../../uploads")));
 
+//view engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
 // v1 api routes
 app.use("/api/admin/v1", adminRoute)
 app.use("/api/v1", userRoute);
+app.use("/views", viewRoute)
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {
   next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
 });
 
-_io.use(protectSocket)
+// _io.use(protectSocket)
 _io.on('connection', socketServices.connection)
 
 // convert error to ApiError, if needed
