@@ -3,5 +3,6 @@ const { liveController } = require('../../controllers');
 const router = express.Router();
 
 router.get('/analyst', liveController.analyst);
+router.delete('/:id', liveController.deleteById);
 
 module.exports = router;

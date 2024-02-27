@@ -1,10 +1,11 @@
 const express = require('express');
 const { liveController } = require('../../controllers');
-const { protect } = require("../../middlewares/auth")
+const { protect, authorize } = require("../../middlewares/auth")
 const { uploadVideo } = require("../../utils/upload")
 
 const router = express.Router();
 
+router.get('/:liveKey', liveController.getViews);
 router.post('/', protect, uploadVideo.single("thumnail"), liveController.create);
 router.put('/:id', protect, uploadVideo.single("thumnail"), liveController.updateById);
 router.post('/on_connect', liveController.onConnect);

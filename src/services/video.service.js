@@ -100,13 +100,17 @@ const getById = async (videoId) => {
 };
 
 const getAll = async (filter, options) => {
-  const { q, createdAt, duration } = filter;
+  const { q, createdAt, duration, userId } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
 
   const where = {
   };
+
+  if (userId) {
+    where["userId"] = userId
+  }
 
   if (q) {
     where["title"] = {
@@ -286,37 +290,55 @@ const getVideoByType = async(type, categoryId) => {
 }
 
 const updateById = async (id, data) => {
-  const { fullname, email, avatar, gender } = data;
+  const { title, desc, categoryId, disableComment, thumbnail, video } = data;
   
-  const user = await prisma.user.findUnique({
+  const video1 = await prisma.video.findUnique({
     where: {
       id,
     },
   });
   
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
+  if (!video1) {
+    throw new ApiError(httpStatus.NOT_FOUND, "video does not exist");
   }
 
-  const updateUser = await prisma.user.update({
+  const updateVideo = await prisma.video.update({
     where: {
       id,
     },
     data: {
-      fullname,
-      email,
-      avatar,
-      gender
+      title,
+      desc,
+      categoryId,
+      disableComment,
+      thumbnail,
+      video
     },
     select: {
       id: true,
-      fullname: true,
-      email: true,
-      avatar: true,
+      category: true,
+      user: {
+        select: {
+          id: true,
+          fullname: true,
+          avatar: true
+        }
+      },
+      livestream: true,
+      desc: true,
+      createdAt: true,
+      like: true,
+      dislike: true,
+      thumbnail: true,
+      title: true,
+      views: true,
+      srcTranscode: true,
+      createdAt: true,
+      disableComment: true,
     },
   });
 
-  return updateUser;
+  return updateVideo;
 };
 
 const upViews = async(id, count) => {
@@ -417,6 +439,7 @@ module.exports = {
   create,
   getAll,
   getById,
+  updateById,
   deleteById,
   upViews,
   getVideoTrending,

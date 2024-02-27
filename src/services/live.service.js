@@ -79,9 +79,28 @@ const updateStatus = async (liveKey, status) => {
   })
 }
 
+const deleteById = async (id) => {
+  const live = await prisma.liveStream.findUnique({
+    where: {
+      id,
+    },
+  });
+  
+  if (!live) {
+    throw new ApiError(httpStatus.NOT_FOUND, "live does not exist");
+  }
+  
+  return await prisma.liveStream.delete({
+    where: {
+      id
+    },
+  })
+}
+
 module.exports = {
   create,
   getByLiveKey,
+  deleteById,
   updateById,
   updateStatus
 };

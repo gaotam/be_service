@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const { videoService, liveService, transcodeService, historyService, catergoryService } = require("../services");
+const { videoService, transcodeService, historyService, catergoryService } = require("../services");
 const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
@@ -8,6 +8,8 @@ const ApiError = require("../utils/ApiError");
 const create = catchAsync(async (req, res) => {
   const data = { categoryId, title, desc, disableComment } = req.body
   const userId = req.user.id
+
+  await catergoryService.getById(categoryId)
 
   if(!req.files?.video && req.files?.video.length == 0){
     return res.status(httpStatus.BAD_REQUEST).send({ code: httpStatus.BAD_REQUEST, message: "", data: null, error: "video is required" });
@@ -32,6 +34,13 @@ const getAll = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['q', 'createdAt', 'duration']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   videos = await videoService.getAll(filter, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+});
+
+const getAllMe = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['q', 'createdAt', 'duration']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  videos = await videoService.getAll({...filter, userId: req.user.id}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
@@ -70,10 +79,32 @@ const getVideoTrending = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: "" });
 });
 
+const updateById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const data = { title, desc, categoryId, disableComment } = req.body
+
+  await catergoryService.getById(categoryId)
+
+  if(req.files?.thumbnail[0]){
+    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+  }
+
+  if(req.files?.video && req.files?.video.length > 0){
+    data["src"] = `/videos/${req.files?.video[0].filename}`;
+  // await transcodeService.startTranscodeVideo(video.id)
+  }
+
+  data.disableComment = disableComment === "true"
+  const video = await videoService.updateById(id, data)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: video, error: null });
+})
+
 module.exports = {
   create,
   getAll,
+  getAllMe,
   getById,
+  updateById,
   deleteById,
   getVideoTrending,
   category

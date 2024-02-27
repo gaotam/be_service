@@ -114,4 +114,26 @@ const analyst = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById }
+const getViews = catchAsync(async (req, res) => {
+  const { liveKey } = req.params
+  const { data } = await axios.get(`${process.env.ENPOINT_RTMP_SERVER}/stat`)
+  let views = -1;
+  const applications = data["http-flv"]["servers"][0]["applications"]
+  const idxLive = applications.findIndex(a => a.name == "live")
+  const streams = applications[idxLive].live.streams.find(s => s.name == liveKey)
+  if(streams){
+    views = streams.clients.length;
+  }
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {views}, error: "" });
+
+})
+
+const deleteById = catchAsync(async (req, res) => {
+  const { id } = req.params
+  const video = await videoService.getById(id);
+  await liveService.deleteById(video.livestream.id)
+  await axios.post(`${process.env.ENPOINT_RTMP_SERVER}/control/drop/publisher?app=live&name=${video.livestream.liveKey}`)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
+});
+
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getViews, deleteById }

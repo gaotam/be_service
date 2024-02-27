@@ -25,6 +25,20 @@ const getAll = async () => {
   }) 
 }
 
+const getById = async (categoryId) => {
+  const category = await prisma.category.findUnique({
+    where: {
+      id: categoryId,
+    },
+  });
+
+  if (!category) {
+    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
+  }
+
+  return category;
+};
+
 const getByName = async (name) => {
   if(name == "music"){
     name = "Âm nhạc"
@@ -96,6 +110,7 @@ const deleteById = async (id) => {
 
 module.exports = {
   create,
+  getById,
   getAll,
   getByName,
   updateById,
