@@ -59,7 +59,7 @@ const onConnect = catchAsync(async (req, res) => {
 
 const onPlay = catchAsync(async (req, res) => {
   let { token, secret } = req.body
-  console.log(req.body);
+  // console.log(req.body);
   if(secret && secret == process.env.SECRET_TRANSCODE){
     return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
   }

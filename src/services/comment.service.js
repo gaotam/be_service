@@ -40,6 +40,12 @@ const getAll = async (filter, options) => {
       orderBy: sortBy ? { [sortBy]: "desc" } : undefined,
       select: {
         id: true,
+        user: {
+          select: {
+            id: true,
+            fullname: true,
+          }
+        },
         video: {
           select: {
             id: true,
