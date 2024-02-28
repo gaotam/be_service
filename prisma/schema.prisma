@@ -105,7 +105,7 @@ model History {
 model Comment {
   id        String   @id @default(uuid())
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  Video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  video     Video    @relation(fields: [videoId], references: [id], onDelete: Cascade)
   content   String   @db.VarChar(200)
   userId    String
   videoId   String

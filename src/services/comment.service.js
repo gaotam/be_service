@@ -16,7 +16,7 @@ const create = async (commentBody) => {
 };
 
 const getAll = async (filter, options) => {
-  const { videoId } = filter;
+  const { videoId, userId } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
@@ -28,12 +28,29 @@ const getAll = async (filter, options) => {
     where["videoId"] = videoId
   }
 
+  if(userId){
+    where["userId"] = userId
+  }
+
   const [comments, total] = await prisma.$transaction([
     prisma.comment.findMany({
       where,
       skip: (page - 1) * limit,
       take: limit,
       orderBy: sortBy ? { [sortBy]: "desc" } : undefined,
+      select: {
+        id: true,
+        video: {
+          select: {
+            id: true,
+            title: true,
+            thumbnail: true
+          }
+        },
+        content: true,
+        createdAt: true,
+        updatedAt: true
+      }
     }),
     prisma.comment.count({ where: where }),
   ]);

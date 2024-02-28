@@ -26,6 +26,13 @@ const getAll = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: comments, error: "" });
 })
 
+const getAllMe = catchAsync(async (req, res) => {
+  const { page, limit } = req.query
+  const userId = req.user.id;
+  const comments = await commentService.getAll({ userId }, { page, limit })
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: comments, error: "" });
+})
+
 const updateById = catchAsync(async (req, res) => {
   const { id } = req.params
   const { content } = req.body
@@ -42,6 +49,7 @@ const deleteById = catchAsync(async (req, res) => {
 module.exports = {
   create,
   getAll,
+  getAllMe,
   updateById,
-  deleteById
+  deleteById,
 };
