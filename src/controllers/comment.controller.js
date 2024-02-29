@@ -8,11 +8,16 @@ const create = catchAsync(async (req, res) => {
   const userId = req.user.id
 
   const video = await videoService.getById(videoId)
+
   if(video.disableComment){
     return res.status(httpStatus.BAD_REQUEST).send({ code: httpStatus.BAD_REQUEST, message: "error", data: null, error: "commenting function has been disabled" });
   }
 
   await commentService.create({...data, userId: userId})
+
+  if(video.isLive){
+    _io.emit(`comment-${videoId}`, {comment: data.content})
+  }
 
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: null, error: "" });
 })

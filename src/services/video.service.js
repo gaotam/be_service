@@ -78,6 +78,7 @@ const getById = async (videoId) => {
           avatar: true
         }
       },
+      isLive: true,
       livestream: true,
       desc: true,
       createdAt: true,
