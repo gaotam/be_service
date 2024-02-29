@@ -2,6 +2,7 @@ const httpStatus = require("http-status");
 const axios = require("axios");
 const { liveService, videoService, transcodeService} = require("../services");
 const exclude = require('../utils/exclude');
+const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 const { Status } = require("@prisma/client");
@@ -136,4 +137,11 @@ const deleteById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getViews, deleteById }
+const getAllMe = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['q', 'createdAt']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  videos = await videoService.getAll({...filter, userId: req.user.id, isLive: true}, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+});
+
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getViews, deleteById, getAllMe}

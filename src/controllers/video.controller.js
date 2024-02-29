@@ -83,9 +83,11 @@ const updateById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const data = { title, desc, categoryId, disableComment } = req.body
 
-  await catergoryService.getById(categoryId)
+  if(categoryId){
+    await catergoryService.getById(categoryId)
+  }
 
-  if(req.files?.thumbnail[0]){
+  if(req.files?.thumbnail){
     data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
   }
 
