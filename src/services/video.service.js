@@ -112,7 +112,7 @@ const getAll = async (filter, options) => {
     where["userId"] = userId
   }
 
-  if (isLive) {
+  if (isLive != undefined) {
     where["isLive"] = isLive
   }
 

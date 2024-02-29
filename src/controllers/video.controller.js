@@ -33,7 +33,7 @@ const create = catchAsync(async (req, res) => {
 const getAll = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['q', 'createdAt', 'duration']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  videos = await videoService.getAll(filter, options)
+  videos = await videoService.getAll({...filter, isLive: false}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 

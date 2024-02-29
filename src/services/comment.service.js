@@ -37,7 +37,7 @@ const getAll = async (filter, options) => {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: sortBy ? { [sortBy]: "desc" } : undefined,
+      orderBy: sortBy ? { [sortBy]: "desc" } : { createdAt: "desc" },
       select: {
         id: true,
         user: {
