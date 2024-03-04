@@ -6,9 +6,9 @@ const { uploadVideo } = require("../../utils/upload")
 const router = express.Router();
 
 router.get('/', commentController.getAll);
-router.get('/me', commentController.getAllMe);
-router.post('/', commentController.create);
-router.put('/:id', commentController.updateById);
-router.delete('/:id', commentController.deleteById);
+router.get('/me', auth.protect, commentController.getAllMe);
+router.post('/', auth.protect, commentController.create);
+router.put('/:id', auth.protect, commentController.updateById);
+router.delete('/:id', auth.protect, commentController.deleteById);
 
 module.exports = router;

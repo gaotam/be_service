@@ -28,16 +28,16 @@ const defaultRoutes = [
     path: "/videos",
     route: videoRouter
   },
+  {
+    path: "/comments",
+    route: commentRouter
+  },
 ];
 
 const protectRoutes = [
   {
     path: "/users",
     route: userRouter
-  },
-  {
-    path: "/comments",
-    route: commentRouter
   },
   {
     path: "/history",

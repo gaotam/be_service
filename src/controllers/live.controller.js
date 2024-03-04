@@ -80,7 +80,7 @@ const onPublish = catchAsync(async (req, res) => {
   }
 
   if(app === "live" || app === "nr_live"){
-    await transcodeService.startTranscodeLive(liveKey)
+    // await transcodeService.startTranscodeLive(liveKey)
   }
 
   await liveService.updateStatus(name, Status.PROCESS)

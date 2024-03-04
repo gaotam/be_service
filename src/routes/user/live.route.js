@@ -16,5 +16,7 @@ router.post('/on_done', liveController.onDone);
 router.post('/on_play_done', liveController.onPlayDone);
 router.post('/on_publish_done', liveController.onPublishDone);
 router.post('/on_record_done', liveController.onRecordDone);
+router.delete('/:id', liveController.deleteById);
+
 
 module.exports = router;

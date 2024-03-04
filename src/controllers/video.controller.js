@@ -1,5 +1,7 @@
 const httpStatus = require("http-status");
 const { videoService, transcodeService, historyService, catergoryService } = require("../services");
+const { getDuration } = require("../utils/ffmpeg");
+
 const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
 const exclude = require('../utils/exclude');
@@ -23,6 +25,7 @@ const create = catchAsync(async (req, res) => {
     data["src"] = `/videos/${req.files?.video[0].filename}`;
   }
   
+  data["duration"] = await getDuration(process.env.PATH_UPLOAD+data["src"])
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
   // await transcodeService.startTranscodeVideo(video.id)
