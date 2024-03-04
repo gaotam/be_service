@@ -8,7 +8,6 @@ const exclude = require('../utils/exclude');
 const ApiError = require("../utils/ApiError");
 
 const getAll = catchAsync(async (req, res) => {
-  httpUserCounter.inc("GET", "/users")
   const filter = pick(req.query, ['q', 'checkin']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const data = await userService.getAll(filter, options)

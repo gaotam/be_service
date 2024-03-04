@@ -79,7 +79,7 @@ const updateById = async (id, data) => {
     },
     data: {
       name,
-      index
+      index: parseInt(index)
     },
     select: {
       name: true,

@@ -91,15 +91,10 @@ const getAll = async (filter, options) => {
       where,
       select: {
         id: true,
-        fullName: true,
+        fullname: true,
         email: true,
-        phone: true,
-        image: true,
-        isCheckin: true,
-        acceptFace: true,
-        course: true,
-        facebook: true,
-        checkinType: true,
+        avatar: true,
+        isLock: true
       },
       skip: (page - 1) * limit,
       take: limit,
