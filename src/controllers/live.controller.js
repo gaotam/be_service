@@ -144,4 +144,12 @@ const getAllMe = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getViews, deleteById, getAllMe}
+const getAllById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const filter = pick(req.query, ['q', 'createdAt']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  videos = await videoService.getAll({...filter, userId: id, isLive: true}, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+});
+
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getViews, deleteById, getAllMe}

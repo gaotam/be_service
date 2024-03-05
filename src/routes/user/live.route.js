@@ -6,7 +6,8 @@ const { uploadVideo } = require("../../utils/upload")
 const router = express.Router();
 
 router.get('/me', protect, liveController.getAllMe);
-router.get('/:liveKey', liveController.getViews);
+router.get('/:id', liveController.getAllById);
+// router.get('/:liveKey', liveController.getViews);
 router.post('/', protect, uploadVideo.single("thumnail"), liveController.create);
 router.put('/:id', protect, uploadVideo.single("thumnail"), liveController.updateById);
 router.post('/on_connect', liveController.onConnect);
