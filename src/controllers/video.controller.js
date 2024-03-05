@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const { videoService, transcodeService, historyService, catergoryService } = require("../services");
+const { videoService, transcodeService, historyService, catergoryService, notificationService} = require("../services");
 const { getDuration } = require("../utils/ffmpeg");
 
 const pick = require('../utils/pick');
@@ -29,6 +29,12 @@ const create = catchAsync(async (req, res) => {
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
   // await transcodeService.startTranscodeVideo(video.id)
+  await notificationService.create({
+    userId,
+    videoId: video.id,
+    isLive: video.isLive
+  })
+
   const videoRes = exclude(video, ['password']);
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: { video: videoRes}, error: "" });
 });

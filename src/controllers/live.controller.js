@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const axios = require("axios");
-const { liveService, videoService, transcodeService} = require("../services");
+const { liveService, videoService, transcodeService, notificationService} = require("../services");
 const exclude = require('../utils/exclude');
 const pick = require('../utils/pick');
 const catchAsync = require("../utils/catchAsync");
@@ -22,6 +22,11 @@ const create = catchAsync(async (req, res) => {
   data.disableComment = disableComment === "true"
 
   let video = await videoService.create({...data, userId: userId, isLive: true})
+  await notificationService.create({
+    userId,
+    videoId: video.id,
+    isLive: video.isLive
+  })
   const videoRes = exclude(video, ['password']);
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: videoRes, error: "" });
 })

@@ -6,3 +6,6 @@ module.exports.videoController = require("./video.controller")
 module.exports.commentController = require("./comment.controller")
 module.exports.historyController = require("./history.controller")
 module.exports.viewController = require("./view.controller")
+module.exports.subscriptionController = require("./subscription.controller")
+module.exports.notificationController = require("./notification.controller")
+

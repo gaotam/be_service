@@ -7,7 +7,8 @@ const videoRouter = require('./video.route');
 const liveRouter = require('./live.route');
 const commentRouter = require('./comment.route');
 const historyRouter = require('./history.route');
-
+const subscriptionRouter = require("./subscription.route")
+const notificationRouter = require("./notification.route")
 
 const { protect, authorize } = require("../../middlewares/auth")
 
@@ -43,6 +44,14 @@ const protectRoutes = [
     path: "/history",
     route: historyRouter
   },
+  {
+    path: "/subscriptions",
+    route: subscriptionRouter
+  },
+  {
+    path: "/notifications",
+    route: notificationRouter
+  }
 ];
 
 defaultRoutes.forEach((route) => {

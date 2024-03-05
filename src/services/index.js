@@ -10,5 +10,7 @@ module.exports.videoService = require('./video.service');
 module.exports.liveService = require('./live.service');
 module.exports.commentService = require('./comment.service');
 module.exports.historyService = require('./history.service');
+module.exports.subscriptionService = require('./subscription.service');
+module.exports.notificationService = require('./notification.service');
 
 
