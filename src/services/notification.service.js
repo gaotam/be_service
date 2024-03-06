@@ -55,6 +55,7 @@ const getAll = async (userId) => {
           id: true,
           title: true,
           thumbnail: true,
+          isLive: true, 
           user: {
             select: {
               id: true,
