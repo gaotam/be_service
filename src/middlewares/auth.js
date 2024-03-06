@@ -38,6 +38,7 @@ const protect = catchAsync(async (req, res, next) => {
   }
   
   req.user = user;
+  delete user.password
   cache.set(`user-${userId}`, user)
   return next();
 });

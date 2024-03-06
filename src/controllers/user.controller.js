@@ -26,13 +26,14 @@ const getOne = catchAsync(async (req, res) => {
 })
 
 const getById = catchAsync(async (req, res) => {
-  const { userId } = req.params
-  const user = cache.get(`user-${userId}`)
+  const { id } = req.params
+  let user = cache.get(`user-${id}`)
   if(user){
-    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { user: user }, error: "" });
+    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: user, error: "" });
   }
-  const data = await userService.getById(userId);
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { user: data }, error: null });
+  user = await userService.getById(id);
+  const userRes = exclude(user, ['password']);
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: userRes, error: null });
 })
 
 const updateById = catchAsync(async (req, res) => {

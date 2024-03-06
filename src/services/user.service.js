@@ -37,12 +37,10 @@ const getById = async (userId) => {
     },
     select: {
       id: true,
-      fullName: true,
-      course: true,
-      email: true,
-      phone: true,
-      image: true,
-      facebook: true,
+      fullname: true,
+      avatar: true,
+      gender: true,
+      
     },
   });
 

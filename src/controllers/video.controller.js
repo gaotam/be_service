@@ -34,23 +34,15 @@ const create = catchAsync(async (req, res) => {
     videoId: video.id,
     isLive: video.isLive
   })
-
+  
   const videoRes = exclude(video, ['password']);
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: { video: videoRes}, error: "" });
 });
 
 const getAll = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['q', 'createdAt', 'duration']);
+  const filter = pick(req.query, ['q', 'createdAt', 'duration', 'userId']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   videos = await videoService.getAll({...filter, isLive: false}, options)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
-});
-
-const getAllById = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const filter = pick(req.query, ['q', 'createdAt', 'duration']);
-  const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const videos = await videoService.getAll({...filter, userId: id}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
@@ -121,7 +113,6 @@ const updateById = catchAsync(async (req, res) => {
 module.exports = {
   create,
   getAll,
-  getAllById,
   getAllMe,
   getById,
   updateById,

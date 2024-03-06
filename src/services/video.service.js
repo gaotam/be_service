@@ -82,8 +82,6 @@ const getById = async (videoId) => {
       livestream: true,
       desc: true,
       createdAt: true,
-      like: true,
-      dislike: true,
       thumbnail: true,
       title: true,
       views: true,
@@ -181,8 +179,6 @@ const getAll = async (filter, options) => {
         src: true,
         thumbnail: true,
         views: true,
-        like: true,
-        dislike: true,
         metadata: true,
         disableComment: true,
         isLive: true,
@@ -216,8 +212,6 @@ const getVideoByType = async(type, categoryId) => {
       src: true,
       thumbnail: true,
       views: true,
-      like: true,
-      dislike: true,
       metadata: true,
       disableComment: true,
       isLive: true,
@@ -285,7 +279,6 @@ const getVideoByType = async(type, categoryId) => {
         src: v.src,
         thumbnail: v.thumbnail,
         views: v.views,
-        like: v.like,
         createdAt: v.createdAt
       }
     })

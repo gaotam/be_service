@@ -10,4 +10,11 @@ const getAll = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: notifications, error: "" });
 });
 
-module.exports = { getAll }
+const updateById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const user = req.user;
+  await notificationService.updateById(id, { watched: true })
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
+});
+
+module.exports = { getAll, updateById}

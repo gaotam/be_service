@@ -4,7 +4,7 @@ const cache = require("../config/cache");
 const ApiError = require("../utils/ApiError");
 
 const create = async (notiBody) => {
-  const { isLive } = notiBody
+  const { isLive, userId, videoId } = notiBody
   let content = ``
   if(!isLive){
     content = "đã tải lên: "
@@ -12,11 +12,25 @@ const create = async (notiBody) => {
     content = "đang phát trực tiếp: "
   }
 
-  notiBody.content = content
-  delete notiBody.isLive
+  const subList = await prisma.subscription.findMany({
+    where: {
+      supUserId: userId
+    }
+  })
 
-  const noti = await prisma.notification.create({
-    data: notiBody,
+  const insertList = subList.map((s) => {
+    const noti =  {
+      userId: s.userId,
+      videoId: videoId,
+      content
+    }
+
+    _io.emit(`notification-${s.userId}`, {})
+    return noti;
+  })
+
+  const noti = await prisma.notification.createMany({
+    data: insertList,
   })
 
   if (!noti) {
@@ -34,6 +48,7 @@ const getAll = async (userId) => {
     select: {
       id: true,
       content: true,
+      watched: true,
       updatedAt: true,
       video: {
         select: {
@@ -49,7 +64,8 @@ const getAll = async (userId) => {
           }
         }
       }
-    }
+    },
+    orderBy: {updatedAt: "desc"},
   }) 
 }
 
@@ -67,55 +83,29 @@ const getById = async (categoryId) => {
   return category;
 };
 
-const getByName = async (name) => {
-  if(name == "music"){
-    name = "Âm nhạc"
-  }
-  else if(name == "game"){
-    name = "Trò chơi"
-  }
-  
-  const category = await prisma.category.findFirst({
-    where: {
-      name
-    },
-  });
-
-  if (!category) {
-    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
-  }
-
-  return category;
-};
-
 const updateById = async (id, data) => {
-  const { name, index } = data;
+  const { watched } = data;
   
-  const category = await prisma.category.findUnique({
+  const noti = await prisma.notification.findUnique({
     where: {
       id,
     },
   });
   
-  if (!category) {
-    throw new ApiError(httpStatus.NOT_FOUND, "category does not exist");
+  if (!noti) {
+    throw new ApiError(httpStatus.NOT_FOUND, "notification does not exist");
   }
 
-  const updateCategory = await prisma.category.update({
+  const updateNoti = await prisma.notification.update({
     where: {
       id,
     },
     data: {
-      name,
-      index: parseInt(index)
-    },
-    select: {
-      name: true,
-      index: true
+      watched
     },
   });
 
-  return updateCategory;
+  return updateNoti;
 };
 
 const deleteById = async (id) => {
@@ -140,7 +130,5 @@ module.exports = {
   create,
   getById,
   getAll,
-  getByName,
   updateById,
-  deleteById
 };

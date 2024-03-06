@@ -33,13 +33,13 @@ const defaultRoutes = [
     path: "/comments",
     route: commentRouter
   },
-];
-
-const protectRoutes = [
   {
     path: "/users",
     route: userRouter
   },
+];
+
+const protectRoutes = [
   {
     path: "/history",
     route: historyRouter
