@@ -40,34 +40,45 @@ const create = async (notiBody) => {
   return noti;
 };
 
-const getAll = async (userId) => {
-  return prisma.notification.findMany({
-    where: {
-      userId
-    },
-    select: {
-      id: true,
-      content: true,
-      watched: true,
-      updatedAt: true,
-      video: {
-        select: {
-          id: true,
-          title: true,
-          thumbnail: true,
-          isLive: true, 
-          user: {
-            select: {
-              id: true,
-              avatar: true,
-              fullname: true
+const getAll = async (filter, options) => {
+  const { userId } = filter
+  const page = parseInt(options.page ?? 1);
+  const limit = parseInt(options.limit ?? 10);
+
+  const [notifications, total] = await prisma.$transaction([
+    prisma.notification.findMany({
+      where: {
+        userId
+      },
+      select: {
+        id: true,
+        content: true,
+        watched: true,
+        updatedAt: true,
+        video: {
+          select: {
+            id: true,
+            title: true,
+            thumbnail: true,
+            isLive: true, 
+            user: {
+              select: {
+                id: true,
+                avatar: true,
+                fullname: true
+              }
             }
           }
         }
-      }
-    },
-    orderBy: {updatedAt: "desc"},
-  }) 
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+      orderBy: {createdAt: "desc"},
+    }),
+    prisma.notification.count({where: { userId }}),
+  ])
+
+  return { notifications, total, page, limit };
 }
 
 const getById = async (categoryId) => {

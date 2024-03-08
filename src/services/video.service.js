@@ -5,29 +5,7 @@ const ApiError = require("../utils/ApiError");
 const categoryService = require("./category.service")
 
 const getOne = async (q) => {
-  const user = await prisma.video.findFirst({
-    where: {
-      OR: [{ phone: q }, { email: q }],
-    },
-    select: {
-      id: true,
-      fullName: true,
-      course: true,
-    },
-  });
 
-  if (!user) {
-    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
-  }
-
-  const success = cache.set(`user-${q}`, {
-    id: user.id,
-    fullName: user.fullName,
-  });
-  if (!success) {
-    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, "server error");
-  }
-  return user;
 };
 
 const create = async (videoBody) => {
@@ -83,6 +61,7 @@ const getById = async (videoId) => {
       desc: true,
       createdAt: true,
       thumbnail: true,
+      duration: true,
       title: true,
       views: true,
       srcTranscode: true,
@@ -180,6 +159,7 @@ const getAll = async (filter, options) => {
         thumbnail: true,
         views: true,
         metadata: true,
+        duration: true,
         disableComment: true,
         isLive: true,
         duration: true,
@@ -211,6 +191,7 @@ const getVideoByType = async(type, categoryId) => {
       desc: true,
       src: true,
       thumbnail: true,
+      duration: true,
       views: true,
       metadata: true,
       disableComment: true,
@@ -277,6 +258,7 @@ const getVideoByType = async(type, categoryId) => {
         title: v.title,
         desc: v.desc,
         src: v.src,
+        duration: v.duration,
         thumbnail: v.thumbnail,
         views: v.views,
         createdAt: v.createdAt
@@ -416,6 +398,7 @@ const getVideoTrending = async (type) => {
       views: true,
       desc: true,
       createdAt: true,
+      duration: true,
       category: {
         select: {
           id: true,

@@ -68,7 +68,8 @@ const category = catchAsync(async (req, res) => {
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
 
-  if(req.user){
+  if(req?.user){
+    await videoService.getById(id)
     await historyService.create(req.user.id, id);
   }
   const video = await videoService.getById(id)

@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const cache = require('../config/cache')
-const { userService, captchaService, aiService, tokenService } = require("../services");
+const { userService } = require("../services");
 
 const catchAsync = require("../utils/catchAsync");
 const pick = require('../utils/pick');
@@ -19,10 +19,10 @@ const getOne = catchAsync(async (req, res) => {
   const user = cache.get(`user-${userId}`)
   if(user){
     const userRes = exclude(user, ['password', 'role', 'updatedAt']);
-    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { user: userRes }, error: null });
+    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: userRes, error: null });
   }
   const data = await userService.getById(userId)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: { user: data }, error: null });
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: null });
 })
 
 const getById = catchAsync(async (req, res) => {

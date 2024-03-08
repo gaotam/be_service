@@ -15,14 +15,24 @@ const create = async (categoryBody) => {
   return category;
 };
 
-const getAll = async () => {
-  return prisma.category.findMany({
-    select: {
-      id: true,
-      name: true,
-      index: true
-    }
-  }) 
+const getAll = async (filter, options) => {
+  const page = parseInt(options.page ?? 1);
+  const limit = parseInt(options.limit ?? 10);
+  const [categories, total] = await prisma.$transaction([
+    prisma.category.findMany({
+      orderBy: {index: "asc"},
+      select: {
+        id: true,
+        name: true,
+        index: true
+      },
+      skip: (page - 1) * limit,
+      take: limit,
+    }),
+    prisma.category.count({}),
+  ])
+
+  return { categories, total, page, limit };
 }
 
 const getById = async (categoryId) => {

@@ -5,18 +5,29 @@ const ApiError = require("../utils/ApiError");
 const { Role } = require("@prisma/client");
 
 const create = async (userId, videoId) => {
-  const history = await prisma.history.create({
+  let history = await prisma.history.findFirst({
+    where: {
+      userId,
+      videoId
+    }
+  })
+
+  if(history) {
+    return history;
+  }
+
+  const historyCreated = await prisma.history.create({
     data: {
       userId,
       videoId
     }
   })
 
-  if (!history) {
+  if (!historyCreated) {
     throw new ApiError(httpStatus.BAD_REQUEST, "can not create new history");
   }
 
-  return history;
+  return historyCreated;
 };
 
 const getAll = async (filter, options) => {
@@ -54,7 +65,8 @@ const getAll = async (filter, options) => {
             desc: true,
             thumbnail: true,
             createdAt: true,
-            views: true
+            views: true,
+            duration: true
           }
         }
       },

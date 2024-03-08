@@ -1,13 +1,16 @@
 const httpStatus = require("http-status");
 const { notificationService } = require("../services");
+const pick = require('../utils/pick');
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
 
 const getAll = catchAsync(async (req, res) => {
+  const filter = pick(req.query, []);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const user = req.user;
-  const notifications = await notificationService.getAll(user.id)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: notifications, error: "" });
+  const data = await notificationService.getAll({...filter, userId: user.id}, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {...data}, error: "" });
 });
 
 const updateById = catchAsync(async (req, res) => {

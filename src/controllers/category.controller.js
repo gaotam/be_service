@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const { catergoryService } = require("../services");
+const pick = require('../utils/pick');
 const exclude = require('../utils/exclude');
 const catchAsync = require("../utils/catchAsync");
 const ApiError = require("../utils/ApiError");
@@ -12,8 +13,10 @@ const create = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-  categories = await catergoryService.getAll()
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: categories, error: "" });
+  const filter = pick(req.query, ['q', 'checkin']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  const data = await catergoryService.getAll(filter, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {...data}, error: "" });
 });
 
 const getById = catchAsync(async (req, res) => {
