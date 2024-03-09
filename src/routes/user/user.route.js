@@ -6,7 +6,7 @@ const { uploadImages } = require("../../utils/upload")
 
 const router = express.Router();
 
-router.get('/', auth.protect, userController.getOne);
+router.get('/profile', auth.protect, userController.getOne);
 router.get('/:id', userController.getById);
 router.put('/', auth.protect, uploadImages.single("avatar"), userController.updateById);
 

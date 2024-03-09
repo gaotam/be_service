@@ -39,6 +39,14 @@ const getAll = async (userId) => {
   }) 
 }
 
+const getTotalSubUser = async (userId) => {
+  return prisma.subscription.count({
+    where: {
+      supUserId: userId
+    }
+  })
+}
+
 const getBySubId = async (userId, subId) => {
   const sub = await prisma.subscription.findFirst({
     where: {
@@ -57,5 +65,6 @@ const getBySubId = async (userId, subId) => {
 module.exports = {
   create,
   getAll,
+  getTotalSubUser,
   getBySubId
 };

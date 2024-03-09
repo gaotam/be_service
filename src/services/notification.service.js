@@ -45,7 +45,7 @@ const getAll = async (filter, options) => {
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
 
-  const [notifications, total] = await prisma.$transaction([
+  const [notifications, total, totalUnWatched] = await prisma.$transaction([
     prisma.notification.findMany({
       where: {
         userId
@@ -76,9 +76,12 @@ const getAll = async (filter, options) => {
       orderBy: {createdAt: "desc"},
     }),
     prisma.notification.count({where: { userId }}),
+    prisma.notification.count({where: {
+      watched: false
+    }})
   ])
 
-  return { notifications, total, page, limit };
+  return { notifications, total, totalUnWatched, page, limit };
 }
 
 const getById = async (categoryId) => {

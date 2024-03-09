@@ -1,6 +1,6 @@
 const httpStatus = require("http-status");
 const cache = require('../config/cache')
-const { userService } = require("../services");
+const { userService, videoService, subscriptionService } = require("../services");
 
 const catchAsync = require("../utils/catchAsync");
 const pick = require('../utils/pick');
@@ -16,12 +16,16 @@ const getAll = catchAsync(async (req, res) => {
 
 const getOne = catchAsync(async (req, res) => {
   const userId = req.user.id
-  const user = cache.get(`user-${userId}`)
-  if(user){
-    const userRes = exclude(user, ['password', 'role', 'updatedAt']);
-    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: userRes, error: null });
-  }
+  // const user = cache.get(`user-${userId}`)
+  // if(user){
+  //   const userRes = exclude(user, ['password', 'role', 'updatedAt']);
+  //   return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: userRes, error: null });
+  // }
   const data = await userService.getById(userId)
+  const videos = await videoService.getAll({userId}, {})
+  const totalSub = await subscriptionService.getTotalSubUser(userId)
+  data.totalVideo = videos.total
+  data.totalSub = totalSub
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: null });
 })
 
