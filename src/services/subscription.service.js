@@ -36,6 +36,15 @@ const getAll = async (userId) => {
     where: {
       userId
     },
+    select: {
+      sup_user: {
+        select: {
+          id: true,
+          fullname: true,
+          avatar: true
+        }
+      }
+    }
   }) 
 }
 

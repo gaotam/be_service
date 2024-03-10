@@ -149,6 +149,13 @@ const getAllMe = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
+const getAll = catchAsync(async (req, res) => {
+  const filter = pick(req.query, ['q', 'createdAt', 'userId']);
+  const options = pick(req.query, ['sortBy', 'limit', 'page']);
+  videos = await videoService.getAll({...filter, isLive: true}, options)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+});
+
 const getAllById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const filter = pick(req.query, ['q', 'createdAt']);
@@ -157,4 +164,4 @@ const getAllById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getViews, deleteById, getAllMe}
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getViews, deleteById, getAll, getAllMe}

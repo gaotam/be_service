@@ -31,12 +31,16 @@ const getOne = catchAsync(async (req, res) => {
 
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
-  let user = cache.get(`user-${id}`)
-  if(user){
-    return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: user, error: "" });
-  }
-  user = await userService.getById(id);
+  // let user = cache.get(`user-${id}`)
+  // if(user){
+  //   return res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: user, error: "" });
+  // }
+  const user = await userService.getById(id);
+  const videos = await videoService.getAll({userId: id}, {})
+  const totalSub = await subscriptionService.getTotalSubUser(id)
   const userRes = exclude(user, ['password']);
+  userRes.totalVideo = videos.total
+  userRes.totalSub = totalSub
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: userRes, error: null });
 })
 

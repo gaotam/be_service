@@ -79,7 +79,7 @@ const getById = async (videoId) => {
 
 const getAll = async (filter, options) => {
   const { q, createdAt, duration, userId, isLive } = filter;
-  const page = parseInt(options.page ?? 1);
+  const page = Math.max(parseInt(options.page) || 1, 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
 

@@ -77,7 +77,8 @@ const getAll = async (filter, options) => {
     }),
     prisma.notification.count({where: { userId }}),
     prisma.notification.count({where: {
-      watched: false
+      watched: false,
+      userId
     }})
   ])
 
