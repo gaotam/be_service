@@ -40,9 +40,16 @@ const create = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['q', 'createdAt', 'duration', 'userId']);
+  const filter = pick(req.query, ['q', 'createdAt', 'duration', 'userId', 'type']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  videos = await videoService.getAll({...filter, isLive: false}, options)
+  let categoryId = null
+
+  if(filter?.type){
+    const category = await catergoryService.getByName(filter.type)
+    categoryId = category.id
+  }
+  console.log(categoryId);
+  const videos = await videoService.getAll({...filter, isLive: false, categoryId}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
