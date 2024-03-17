@@ -57,8 +57,8 @@ const updateById = catchAsync(async (req, res) => {
 
 const changePassword = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const { password } = req.body
-  await userService.changePassword(userId, password)
+  const { oldPassword, password } = req.body
+  await userService.changePassword(userId, oldPassword, password)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: null });
 })
 

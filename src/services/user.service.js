@@ -1,5 +1,6 @@
 const httpStatus = require("http-status");
 const prisma = require("../client");
+const bcrypt = require("bcryptjs");
 const cache = require("../config/cache");
 const { encryptPassword } = require('../utils/encryption');
 const ApiError = require("../utils/ApiError");
@@ -42,6 +43,7 @@ const getById = async (userId) => {
       avatar: true,
       gender: true,
       email: true,
+      password: true,
     },
   });
 
@@ -63,7 +65,16 @@ const getUnique = async (email) => {
   });
 };
 
-const changePassword = async (userId, password) => {
+const changePassword = async (userId, oldPassword, password) => {
+  const user = await getById(userId);
+
+  if (!user || !(await bcrypt.compare(oldPassword, user.password))) {
+    throw new ApiError(
+      httpStatus.UNAUTHORIZED,
+      "user account or password incorrect"
+    );
+  }
+
   await prisma.user.update({
     where: {
       id: userId
