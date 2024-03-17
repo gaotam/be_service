@@ -1,6 +1,7 @@
 const httpStatus = require("http-status");
 const prisma = require("../client");
 const cache = require("../config/cache");
+const { encryptPassword } = require('../utils/encryption');
 const ApiError = require("../utils/ApiError");
 const { Role } = require("@prisma/client");
 
@@ -40,7 +41,7 @@ const getById = async (userId) => {
       fullname: true,
       avatar: true,
       gender: true,
-      
+      email: true,
     },
   });
 
@@ -60,6 +61,15 @@ const getUnique = async (email) => {
       id: true,
     },
   });
+};
+
+const changePassword = async (userId, password) => {
+  await prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: { password: await encryptPassword(password) }
+  })
 };
 
 const getAll = async (filter, options) => {
@@ -218,5 +228,6 @@ module.exports = {
   getUserByEmail,
   updateById,
   deleteImage,
-  lockUserById
+  lockUserById,
+  changePassword,
 };

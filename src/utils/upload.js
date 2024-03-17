@@ -4,7 +4,7 @@ const crypto = require("crypto");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, `${process.env.PATH_UPLOAD}/images`);
+    cb(null, `${process.env.PATH_UPLOAD}/avatar`);
   },
   filename: function (req, file, cb) {
     const ext = path.extname(file.originalname);
@@ -32,7 +32,7 @@ const storageVideo = multer.diskStorage({
   destination: function (req, file, cb) {
     switch(file.fieldname) {
       case "thumbnail":
-        cb(null, `${process.env.PATH_UPLOAD}/thumbnails`);
+        cb(null, `${process.env.PATH_UPLOAD}/thumbnail`);
         break;
       case "video":
         cb(null, `${process.env.PATH_UPLOAD}/videos`);

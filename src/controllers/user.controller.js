@@ -55,6 +55,13 @@ const updateById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {user: user}, error: null });
 })
 
+const changePassword = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const { password } = req.body
+  await userService.changePassword(userId, password)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: null });
+})
+
 const lockUserById = catchAsync(async (req, res) => {
   const { userId } = req.params
   const { isLock } = req.body
@@ -93,5 +100,6 @@ module.exports = {
   updateById,
   deleteImage,
   updateFace,
-  lockUserById
+  lockUserById,
+  changePassword
 };

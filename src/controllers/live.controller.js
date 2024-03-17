@@ -104,8 +104,10 @@ const onPlayDone = catchAsync(async (req, res) => {
 });
 
 const onPublishDone = catchAsync(async (req, res) => {
-  const {name} = req.body
+  const { name } = req.body
   await liveService.updateStatus(name, Status.SUCCESS)
+  const live = await liveService.getByLiveKey(name)
+  console.log(live);
   _io.emit(`on-publish-done-${name}`, {})
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
