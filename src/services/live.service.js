@@ -26,6 +26,12 @@ const getByLiveKey = async(liveKey) => {
     },
     select: {
       id: true,
+      isRecord: true,
+      Video: {
+        select: {
+          id: true
+        }
+      }
     },
   });
 }

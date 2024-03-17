@@ -107,7 +107,10 @@ const onPublishDone = catchAsync(async (req, res) => {
   const { name } = req.body
   await liveService.updateStatus(name, Status.SUCCESS)
   const live = await liveService.getByLiveKey(name)
-  console.log(live);
+  if(live.isRecord){
+    await videoService.updateById(live.Video[0].id, {src: `/records/${name}.flv`})
+    await transcodeService.startTranscodeVideo(live.Video[0].id)
+  }
   _io.emit(`on-publish-done-${name}`, {})
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });

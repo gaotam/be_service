@@ -274,7 +274,7 @@ const getVideoByType = async(type, categoryId) => {
 }
 
 const updateById = async (id, data) => {
-  const { title, desc, categoryId, disableComment, thumbnail, video } = data;
+  const { title, desc, categoryId, disableComment, thumbnail, src } = data;
   
   const video1 = await prisma.video.findUnique({
     where: {
@@ -296,7 +296,7 @@ const updateById = async (id, data) => {
       categoryId,
       disableComment,
       thumbnail,
-      video
+      src
     },
     select: {
       id: true,
@@ -311,8 +311,6 @@ const updateById = async (id, data) => {
       livestream: true,
       desc: true,
       createdAt: true,
-      like: true,
-      dislike: true,
       thumbnail: true,
       title: true,
       views: true,
