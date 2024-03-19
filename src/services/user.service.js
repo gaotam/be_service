@@ -84,7 +84,7 @@ const changePassword = async (userId, oldPassword, password) => {
 };
 
 const getAll = async (filter, options) => {
-  const { q, checkin } = filter;
+  const { q, role, isLock } = filter;
   const page = parseInt(options.page ?? 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
@@ -101,8 +101,12 @@ const getAll = async (filter, options) => {
     ];
   }
 
-  if (checkin == 1) {
-    where["isCheckin"] = true;
+  if (role) {
+    where["role"] = role;
+  }
+
+  if (isLock != "") {
+    where["isLock"] = isLock === "true";
   }
 
   const [users, total] = await prisma.$transaction([
@@ -113,7 +117,9 @@ const getAll = async (filter, options) => {
         fullname: true,
         email: true,
         avatar: true,
-        isLock: true
+        isLock: true,
+        role: true,
+        gender: true
       },
       skip: (page - 1) * limit,
       take: limit,
@@ -179,6 +185,34 @@ const updateById = async (id, data) => {
   return updateUser;
 };
 
+const changeRole = async (id, role) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, "user does not exist");
+  }
+
+  return prisma.user.update({
+    where: {
+      id,
+    },
+    data: {
+      role
+    },
+    select: {
+      id: true,
+      fullname: true,
+      email: true,
+      avatar: true,
+      isLock: true
+    },
+  });
+}
+
 const lockUserById = async (id, isLock) => {
   const user = await prisma.user.findUnique({
     where: {
@@ -238,6 +272,7 @@ module.exports = {
   getUnique,
   getUserByEmail,
   updateById,
+  changeRole,
   deleteImage,
   lockUserById,
   changePassword,

@@ -8,7 +8,7 @@ const exclude = require('../utils/exclude');
 const ApiError = require("../utils/ApiError");
 
 const getAll = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['q', 'checkin']);
+  const filter = pick(req.query, ['q', 'role', 'isLock']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const data = await userService.getAll(filter, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, msg: "success", data: {...data}, error: "" });
@@ -69,6 +69,13 @@ const lockUserById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {user: user}, error: null });
 })
 
+const changeRole = catchAsync(async (req, res) => {
+  const { userId } = req.params
+  const { role } = req.body
+  await userService.changeRole(userId, role)
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: null });
+})
+
 const updateFace = catchAsync(async (req, res) => {
   const { id } = req.user;
   const isUpdate = cache.get(`face-${id}`);
@@ -98,6 +105,7 @@ module.exports = {
   getById,
   getOne,
   updateById,
+  changeRole,
   deleteImage,
   updateFace,
   lockUserById,
