@@ -28,7 +28,7 @@ const create = catchAsync(async (req, res) => {
   data["duration"] = await getDuration(process.env.PATH_UPLOAD+data["src"])
   data.disableComment = disableComment === "true"
   let video = await videoService.create({...data, userId: userId})
-  // await transcodeService.startTranscodeVideo(video.id)
+  await transcodeService.startTranscodeVideo(video.id)
   await notificationService.create({
     userId,
     videoId: video.id,
@@ -48,7 +48,6 @@ const getAll = catchAsync(async (req, res) => {
     const category = await catergoryService.getByName(filter.type)
     categoryId = category.id
   }
-  console.log(categoryId);
   const videos = await videoService.getAll({...filter, isLive: false, categoryId}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });

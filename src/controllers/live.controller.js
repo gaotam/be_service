@@ -122,7 +122,15 @@ const onRecordDone = catchAsync(async (req, res) => {
 
 const analyst = catchAsync(async (req, res) => {
   const { data } = await axios.get(`${process.env.ENPOINT_RTMP_SERVER}/stat`)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: data, error: "" });
+  const applications = data["http-flv"]["servers"][0]["applications"]
+  const idxLive = applications.findIndex(a => a.name == "live")
+  const streams = applications[idxLive].live.streams
+  let result = {}
+
+  for(stream of streams) {
+    result[stream.name] = stream.clients.length
+  } 
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: result, error: "" });
 });
 
 const getViews = catchAsync(async (req, res) => {
@@ -155,7 +163,7 @@ const getAllMe = catchAsync(async (req, res) => {
 });
 
 const getAll = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['q', 'createdAt', 'userId']);
+  const filter = pick(req.query, ['q', 'createdAt', 'userId', 'categoryId', 'status']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   videos = await videoService.getAll({...filter, isLive: true}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });

@@ -78,7 +78,7 @@ const getById = async (videoId) => {
 };
 
 const getAll = async (filter, options) => {
-  const { q, createdAt, duration, userId, isLive, categoryId } = filter;
+  const { q, createdAt, duration, userId, isLive, categoryId, status } = filter;
   const page = Math.max(parseInt(options.page) || 1, 1);
   const limit = parseInt(options.limit ?? 10);
   const sortBy = options.sortBy;
@@ -88,6 +88,12 @@ const getAll = async (filter, options) => {
 
   if (userId) {
     where["userId"] = userId
+  }
+
+  if(status){
+    where["livestream"] = {
+      status
+    }
   }
 
   if (categoryId) {
@@ -154,6 +160,12 @@ const getAll = async (filter, options) => {
             id: true,
             fullname: true,
             avatar: true,
+          }
+        },
+        livestream: {
+          select: {
+            status: true,
+            liveKey: true
           }
         },
         category: true,
