@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/me', protect, liveController.getAllMe);
 router.get('/', liveController.getAll);
 router.get('/:id', liveController.getAllById);
-// router.get('/:liveKey', liveController.getViews);
+router.get('/view/:liveKey', liveController.getView);
 router.post('/', protect, uploadVideo.single("thumnail"), liveController.create);
 router.put('/:id', protect, uploadVideo.single("thumnail"), liveController.updateById);
 router.post('/on_connect', liveController.onConnect);

@@ -133,17 +133,18 @@ const analyst = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: result, error: "" });
 });
 
-const getViews = catchAsync(async (req, res) => {
+const getView = catchAsync(async (req, res) => {
   const { liveKey } = req.params
   const { data } = await axios.get(`${process.env.ENPOINT_RTMP_SERVER}/stat`)
-  let views = -1;
+  let views = 0;
+
   const applications = data["http-flv"]["servers"][0]["applications"]
   const idxLive = applications.findIndex(a => a.name == "live")
   const streams = applications[idxLive].live.streams.find(s => s.name == liveKey)
   if(streams){
     views = streams.clients.length;
   }
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: {views}, error: "" });
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: views, error: "" });
 
 })
 
@@ -177,4 +178,4 @@ const getAllById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getViews, deleteById, getAll, getAllMe}
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getView, deleteById, getAll, getAllMe}
