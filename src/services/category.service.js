@@ -56,6 +56,9 @@ const getByName = async (name) => {
   else if(name == "game"){
     name = "Trò chơi"
   }
+  else if(name == "film"){
+    name = "Phim ảnh"
+  }
   
   const category = await prisma.category.findFirst({
     where: {

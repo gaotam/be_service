@@ -12,7 +12,7 @@ const create = catchAsync(async (req, res) => {
   const userId = req.user.id
 
   if(req.files?.thumbnail[0]){
-    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
   }
 
   const live = await liveService.create({isRecord: isRecord === "true"})
@@ -31,13 +31,19 @@ const create = catchAsync(async (req, res) => {
   res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: videoRes, error: "" });
 })
 
+const uploadThumbnail = catchAsync(async (req, res) => {
+  const { videoId } = req.params
+  await videoService.updateById(videoId, {thumbnail: `/thumbnail/${req.file.filename}`})
+  res.status(httpStatus.CREATED).send({ code: httpStatus.CREATED, message: "success", data: null, error: "" });
+})
+
 const updateById = catchAsync(async (req, res) => {
   const { id } = req.params
   const data = { categoryId, title, desc, disableComment, isRecord } = req.body
   const userId = req.user.id
 
   if(req.files?.thumbnail[0]){
-    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
   }
 
   // const live = await liveService.create({isRecord: isRecord === "true"})
@@ -136,21 +142,28 @@ const analyst = catchAsync(async (req, res) => {
 const getView = catchAsync(async (req, res) => {
   const { liveKey } = req.params
   const { data } = await axios.get(`${process.env.ENPOINT_RTMP_SERVER}/stat`)
-  let views = 0;
+  let view = 0;
 
   const applications = data["http-flv"]["servers"][0]["applications"]
   const idxLive = applications.findIndex(a => a.name == "live")
   const streams = applications[idxLive].live.streams.find(s => s.name == liveKey)
   if(streams){
-    views = streams.clients.length;
+    view = streams.clients.length;
   }
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: views, error: "" });
+
+  const live = await liveService.getByLiveKey(liveKey)
+  const videoId = live.Video[0].id
+  await videoService.updateById(videoId, {views: view})
+  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: view, error: "" });
 
 })
 
 const deleteById = catchAsync(async (req, res) => {
   const { id } = req.params
   const video = await videoService.getById(id);
+  if(!video.livestream.isRecord){
+    await videoService.deleteById(id);
+  }
   await liveService.deleteById(video.livestream.id)
   await axios.post(`${process.env.ENPOINT_RTMP_SERVER}/control/drop/publisher?app=live&name=${video.livestream.liveKey}`)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
@@ -178,4 +191,4 @@ const getAllById = catchAsync(async (req, res) => {
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
-module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getView, deleteById, getAll, getAllMe}
+module.exports = { onConnect, onPlay, onPublish, onDone, onPlayDone, onPublishDone, onRecordDone, create, analyst, updateById, getAllById, getView, deleteById, getAll, getAllMe, uploadThumbnail}

@@ -18,7 +18,7 @@ const create = catchAsync(async (req, res) => {
   }
 
   if(req.files?.thumbnail[0]){
-    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
   }
 
   if(req.files?.video && req.files?.video.length > 0){
@@ -44,18 +44,24 @@ const getAll = catchAsync(async (req, res) => {
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   let categoryId = null
 
-  if(filter?.type){
+  if(filter?.type && filter?.type != "live"){
     const category = await catergoryService.getByName(filter.type)
     categoryId = category.id
   }
-  const videos = await videoService.getAll({...filter, isLive: false, categoryId}, options)
-  res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+
+  if(filter?.type != "live"){
+    const videos = await videoService.getAll({...filter, isLive: false, categoryId}, options)
+    res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+  } else {
+    const videos = await videoService.getAll({...filter, isLive: true, status: "PROCESS"}, options)
+    res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
+  }
 });
 
 const getAllMe = catchAsync(async (req, res) => {
   const filter = pick(req.query, ['q', 'createdAt', 'duration']);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
-  const videos = await videoService.getAll({...filter, userId: req.user.id}, options)
+  const videos = await videoService.getAll({...filter, isLive: false, userId: req.user.id}, options)
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: videos, error: "" });
 });
 
@@ -104,7 +110,7 @@ const updateById = catchAsync(async (req, res) => {
   }
 
   if(req.files?.thumbnail){
-    data["thumbnail"] = `/thumbnails/${req.files?.thumbnail[0].filename}`;
+    data["thumbnail"] = `/thumbnail/${req.files?.thumbnail[0].filename}`;
   }
 
   if(req.files?.video && req.files?.video.length > 0){
