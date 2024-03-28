@@ -172,6 +172,7 @@ const getAll = async (filter, options) => {
         title: true,
         desc: true,
         src: true,
+        srcTranscode: true,
         thumbnail: true,
         views: true,
         metadata: true,

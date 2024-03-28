@@ -36,6 +36,18 @@ const getByLiveKey = async(liveKey) => {
   });
 }
 
+const updateLiveById = async(liveId, { liveKey, status }) => {
+  await prisma.liveStream.update({
+    where: {
+      id: liveId,
+    },
+    data: {
+      liveKey,
+      status
+    }
+  })
+}
+
 const updateById = async (id, {categoryId, title, desc, disableComment, isRecord}) => {
   const video = await prisma.video.findUnique({
     where: {
@@ -108,5 +120,6 @@ module.exports = {
   getByLiveKey,
   deleteById,
   updateById,
-  updateStatus
+  updateStatus,
+  updateLiveById
 };

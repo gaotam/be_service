@@ -105,9 +105,9 @@ const getAll = async (filter, options) => {
     where["role"] = role;
   }
 
-  if (isLock != "") {
-    where["isLock"] = isLock === "true";
-  }
+  // if (isLock != "") {
+  //   where["isLock"] = isLock === "true";
+  // }
 
   const [users, total] = await prisma.$transaction([
     prisma.user.findMany({

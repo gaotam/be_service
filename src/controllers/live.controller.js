@@ -164,8 +164,16 @@ const deleteById = catchAsync(async (req, res) => {
   if(!video.livestream.isRecord){
     await videoService.deleteById(id);
   }
-  await liveService.deleteById(video.livestream.id)
+  await liveService.updateLiveById(video.livestream.id, {
+    liveKey: "",
+    status: Status.SUCCESS
+  })
   await axios.post(`${process.env.ENPOINT_RTMP_SERVER}/control/drop/publisher?app=live&name=${video.livestream.liveKey}`)
+
+  if(video.livestream.isRecord){
+    await videoService.updateById(video.id, {src: `/records/${video.livestream.liveKey}.flv`})
+    await transcodeService.startTranscodeVideo(video.id)
+  }
   res.status(httpStatus.OK).send({ code: httpStatus.OK, message: "success", data: null, error: "" });
 });
 
