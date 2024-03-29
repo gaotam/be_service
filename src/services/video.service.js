@@ -424,7 +424,8 @@ const getVideoTrending = async (type) => {
       user: {
         select: {
           id: true,
-          fullname: true
+          fullname: true,
+          avatar: true
         }
       }
     }
