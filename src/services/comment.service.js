@@ -44,6 +44,7 @@ const getAll = async (filter, options) => {
           select: {
             id: true,
             fullname: true,
+            avatar: true
           }
         },
         video: {
